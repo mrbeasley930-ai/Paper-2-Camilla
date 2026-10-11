@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heroes L2 — Virgil: Camilla</title>
+<style>
+:root{--red:#7a1c1c;--red2:#a52a2a;--gold:#c9a227;--gold2:#f3e6b8;--ink:#2b2118;--paper:#fbf7ee;--card:#fffdf7;--green:#2e7d32;--greenbg:#e8f5e9;--redbg:#fdecea;--amberbg:#fff4d6;--grey:#6b6155}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.55;padding-bottom:180px}
+header{background:var(--red);color:#fff;padding:18px 16px;border-bottom:5px solid var(--gold)}
+header h1{margin:0;font-size:1.5rem}
+header p{margin:4px 0 0;color:var(--gold2);font-size:.95rem}
+.topbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;max-width:920px;margin:0 auto;padding:8px 16px;font-size:.9rem}
+#whoami{color:var(--grey)} #savestatus{font-weight:bold}
+#score{color:var(--red);font-weight:bold}
+main{max-width:920px;margin:0 auto;padding:0 16px 16px}
+h2{color:var(--red);border-bottom:2px solid var(--gold);padding-bottom:4px;margin-top:28px}
+h3{color:var(--red);margin:18px 0 6px;font-size:1.05rem}
+.box{background:var(--card);border:1px solid #e3d6b4;border-left:5px solid var(--gold);border-radius:6px;padding:12px 14px;margin:12px 0}
+.passage{font-size:1.1rem}
+.line{display:flex;gap:10px}
+.ln{color:var(--grey);font-size:.8rem;min-width:62px;text-align:right;padding-top:4px;font-family:Arial,sans-serif}
+.gap{color:var(--grey);font-style:italic;font-size:.9rem;margin:6px 0 6px 72px}
+.w{cursor:pointer;border-radius:3px;padding:0 1px}
+.w:hover{background:var(--gold2)}
+.w.sel{background:var(--gold);color:#fff}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+nav.tabs button{font-family:inherit;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.9rem}
+nav.tabs button.on{background:var(--red);color:#fff}
+nav.tabs button.done{border-color:var(--green);color:var(--green)}
+nav.tabs button.done.on{background:var(--green);color:#fff}
+.latin{font-size:1.3rem;background:var(--card);border:2px solid var(--gold);border-radius:8px;padding:14px;margin:10px 0}
+.step{background:var(--card);border:1px solid #e3d6b4;border-radius:8px;margin:14px 0;overflow:hidden}
+.step>.sh{background:var(--red);color:#fff;padding:8px 12px;font-weight:bold}
+.step>.sb{padding:10px 14px}
+.q{border-bottom:1px dashed #e3d6b4;padding:10px 0}
+.q:last-child{border-bottom:none}
+.qp{font-weight:bold;margin-bottom:6px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button,.tapw,.btn,.chip,.sm{font-family:inherit;font-size:1rem;border:1px solid #bba77a;background:#fff;border-radius:6px;padding:5px 10px;cursor:pointer;color:var(--ink)}
+.opts button:hover,.tapw:hover,.chip:hover,.sm:hover{background:var(--gold2)}
+.right{background:var(--greenbg)!important;border-color:var(--green)!important;color:var(--green)!important}
+.wrong{background:var(--redbg)!important;border-color:var(--red2)!important;color:var(--red2)!important}
+.chosen{outline:3px solid var(--gold);font-weight:bold}
+.fb{margin-top:6px;padding:6px 10px;border-radius:5px;display:none;font-size:.95rem}
+.fb.ok{display:block;background:var(--greenbg);color:#1b5e20}
+.fb.no{display:block;background:var(--redbg);color:var(--red)}
+.fb.info{display:block;background:#f4efe1;color:var(--ink)}
+.btn{background:var(--red);color:#fff;border-color:var(--red)}
+.btn:hover{background:var(--red2)}
+.btn.ghost{background:#fff;color:var(--red)}
+.chunk{display:grid;grid-template-columns:1fr;gap:6px;padding:10px 0;border-bottom:1px dashed #e3d6b4}
+.chunk:last-child{border-bottom:none}
+.cl{font-weight:bold;color:var(--red);font-size:1.1rem}
+input[type=text],textarea{width:100%;font-family:inherit;font-size:1rem;padding:7px;border:1px solid #bba77a;border-radius:5px;background:#fff}
+textarea{min-height:90px}
+.model{display:none;background:var(--greenbg);border-left:4px solid var(--green);padding:8px 12px;border-radius:4px;margin-top:6px;color:#1b5e20}
+.model.show{display:block}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.selfm{display:none;margin-top:6px}
+.selfm.show{display:flex}
+.build{min-height:44px;border:2px dashed var(--gold);border-radius:6px;padding:8px;margin:8px 0;background:#fff}
+.chip.used{opacity:.35;pointer-events:none}
+.note{color:var(--grey);font-size:.9rem}
+#pop{position:fixed;left:0;right:0;bottom:0;background:var(--red);color:#fff;border-top:4px solid var(--gold);padding:12px 16px;display:none;z-index:10}
+#pop .in{max-width:920px;margin:0 auto;position:relative}
+#pop .pw{font-size:1.35rem;font-weight:bold;color:var(--gold2)}
+#pop .pl{font-style:italic}
+#pop .pm{font-size:1.15rem;margin-top:2px}
+#pop .pg{font-size:.95rem;color:#f6e9e9;margin-top:4px}
+#pop .x{position:absolute;right:0;top:0;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer}
+.navbtns{display:flex;justify-content:space-between;margin:18px 0}
+
+  /* word help + sticky sentence (26 Sept 2026) */
+  .stickysent { position:sticky; top:0; z-index:8; padding:8px 0 8px; margin:0 0 6px; }
+  .stickysent .latin { margin:4px 0 6px; }
+  .whbar { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; font-size:13px; }
+  .whbar .whl { font-weight:bold; }
+  .whbar .seg { display:inline-flex; border-radius:999px; padding:2px; gap:2px; }
+  .whbar .seg button { border:0; background:transparent; padding:4px 11px; border-radius:999px; font-family:Georgia,serif; font-size:13px; cursor:pointer; }
+  .whbar .whh { font-style:italic; opacity:.8; }
+  #pop .pe { margin-top:4px; font-size:15px; } #pop .pe .lang { display:block; font-size:13px; opacity:.8; margin-top:3px; }
+  #pop .pk { display:block; font-size:11px; letter-spacing:1px; text-transform:uppercase; opacity:.75; }
+  #pop .pb { margin-top:6px; } #pop .showm { font-family:Georgia,serif; font-size:13px; padding:4px 12px; border-radius:6px; cursor:pointer; }
+  .stickysent { background:var(--paper); border-bottom:2px solid var(--gold); box-shadow:0 8px 12px -10px rgba(0,0,0,.35); }
+  .whbar .seg { background:#eadfc3; } .whbar .seg button.on { background:var(--red); color:#fff; }
+  #pop .showm { background:#fff; color:var(--red); border:1px solid var(--gold); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Camilla, the Volscian Warrior</h1>
+  <p>Heroes L2 · Virgil, <i>Aeneid</i> 11.648–658, 664–665, 676–689 · Eduqas GCSE Latin Component 2 · Heroes and Villains</p>
+</header>
+<div class="topbar"><span id="whoami"></span><span id="score"></span><span id="savestatus" class="note"></span></div>
+<main>
+
+<div class="box">
+<b>How to use this page</b><br>
+1. Tap any Latin word (anywhere on the page) to see its dictionary form, meaning and grammar.<br>
+2. Work through the passage one sentence at a time using the sentence buttons.<br>
+3. For each sentence: find the verb → find the subject → grammar questions → translate chunk by chunk → put the chunks in English order → write it up.<br>
+4. Your first answer to each question is the one that counts, so think before you click. Everything saves to Mr Beasley as you go.
+</div>
+
+<div class="box">
+<b>Setting the scene</b><br>
+Aeneas' Trojans and their Etruscan allies are fighting the Latins outside the city of Laurentum. Camilla, a princess of the Volsci, fights for Turnus. As a baby she was dedicated by her father to Diana, the virgin huntress goddess, and was brought up in the wilds as a huntress and warrior. In this passage she is at the height of her success in battle. The lines missing from the text (659–663) compare her to the Amazons of Thrace; 666–675 list her victims.
+</div>
+
+<h2>The whole passage</h2>
+<div class="box passage" id="full"></div>
+
+<h2>Sentence by sentence</h2>
+<nav class="tabs" id="tabs"></nav>
+<div id="work"></div>
+
+<h2>Finish: how confident are you?</h2>
+<div class="box" id="ragBox">
+<p>How confident are you that you could translate this whole passage in the exam?</p>
+<div class="row">
+<button class="sm nailed" onclick="setRag('green',this)">🟢 I could do it</button>
+<button class="sm close" onclick="setRag('amber',this)">🟠 Mostly – a few bits shaky</button>
+<button class="sm notyet" onclick="setRag('red',this)">🔴 Not yet</button>
+</div>
+</div>
+
+<h2>All my translations</h2>
+<div class="box">
+<p class="note">Everything you write in the "Write it up" boxes collects here.</p>
+<textarea id="all" readonly style="min-height:200px"></textarea>
+<div class="row" style="margin-top:6px"><button class="btn" onclick="copyAll()">Copy my translation</button><span id="copied" class="note"></span></div>
+</div>
+
+</main>
+
+<div id="pop"><div class="in"><button class="x" onclick="hidePop()">×</button>
+<div class="pw" id="pw"></div><div class="pl" id="pl"></div><div class="pm" id="pm"></div><div class="pg" id="pg"></div></div></div>
+
+<script>
+/* Etymology for Word help → Etymology: only the words that have come from the Latin (English, then French / Italian / Spanish).
+   Keyed by the dictionary form shown in the lesson (a trailing " + -que" is ignored). "—" = no common derivative. */
+const ETY = {
+"nunc":"nunc dimittis (the evening canticle); quidnunc (a busybody)",
+"Seianus, -i (m.)":"— (a Roman family name, from the gens Seia)",
+"origo, originis (f.)":"origin, original, originate, aboriginal<span class='lang'>Fr. origine · It. origine · Sp. origen</span>",
+"mos, moris (m.)":"moral, morale, morality, mores, morose<span class='lang'>Fr. mœurs · It. morale</span>",
+"expedio, expedire, expedivi, expeditum":"expedite, expedition, expedient, expeditious",
+"gigno, gignere, genui, genitum":"genitive, genital, progenitor, congenital, genesis (Greek cousin)",
+"Vulsinii, -orum (m. pl.)":"— (modern Bolsena, on Lake Bolsena)",
+"pater, patris (m.)":"paternal, paternity, patriarch, patron, patriot, patrimony<span class='lang'>Fr. père · It. padre · Sp. padre</span>",
+"eques, equitis (m.)":"equestrian, equitation (from equus, horse)",
+"Romanus, -a, -um":"Roman, romance, Romanesque, Romania<span class='lang'>Fr. romain · It. romano · Sp. romano</span>",
+"et":"etc. (et cetera), ampersand (&amp; = 'et')<span class='lang'>Fr. et · It. e · Sp. y</span>",
+"cum (+ subjunctive)":"— (the conjunction has no English descendant)",
+"iuvenis, iuvenis (m.)":"juvenile, juvenilia, rejuvenate, junior (comparative)<span class='lang'>Fr. jeune · It. giovane · Sp. joven</span>",
+"sum, esse, fui":"essence, essential, absent, present, future, entity<span class='lang'>Fr. être · It. essere · Sp. ser</span>",
+"divus, -a, -um":"divine, divinity, diva<span class='lang'>Fr. divin · It. divino · Sp. divino</span>",
+"Augustus, -i (m.)":"August (the month), august (majestic)",
+"nepos, nepotis (m.)":"nepotism (favouring 'nephews'), nephew via French<span class='lang'>Fr. neveu · It. nipote</span>",
+"sector, sectari, sectatus sum":"sect (followers), sectarian (from sequor, follow)",
+"mox":"—",
+"Tiberius, -i (m.)":"— (the river Tiber gives Tiberius his name)",
+"varius, -a, -um":"various, variety, vary, variable, variegated<span class='lang'>Fr. varié · It. vario · Sp. vario</span>",
+"ars, artis (f.)":"art, artist, artisan, artifice, artificial, artful<span class='lang'>Fr. art · It. arte · Sp. arte</span>",
+"devincio, devincire, devinxi, devinctum":"— (from vincio, bind: vinculum, a chain)",
+"adeo":"—",
+"ut (+ subjunctive)":"—",
+"imperator, imperatoris (m.)":"emperor, imperial, imperative, empire<span class='lang'>Fr. empereur · It. imperatore · Sp. emperador</span>",
+"obscurus, -a, -um":"obscure, obscurity<span class='lang'>Fr. obscur · It. oscuro · Sp. oscuro</span>",
+"adversum (+ acc.)":"adverse, adversary, adversity, versus",
+"alius, alia, aliud":"alias, alien, alienate, alibi (from alibi, 'elsewhere')",
+"se (reflexive)":"suicide (sui + caedo)<span class='lang'>Fr. se · It. si · Sp. se</span>",
+"unus, -a, -um":"unit, unity, union, unique, unanimous, universe<span class='lang'>Fr. un · It. uno · Sp. uno</span>",
+"unus, una, unum":"unit, unity, union, unique, unanimous, universe<span class='lang'>Fr. un · It. uno · Sp. uno</span>",
+"incautus, -a, -um":"incautious, caution, precaution (from caveo, beware)",
+"intectus, -a, -um":"— (from tego, cover: protect, detect)",
+"efficio, efficere, effeci, effectum":"effect, effective, efficient, efficacy",
+"non":"non- (nonsense, nonentity, non sequitur)<span class='lang'>Fr. non · It. no · Sp. no</span>",
+"tam":"—",
+"sollertia, -ae (f.)":"— (sollers = skilled: from sollus, whole + ars)",
+"quippe":"—",
+"idem, eadem, idem":"identity, identical, ibid. and id. in footnotes",
+"vinco, vincere, vici, victum":"victory, victor, convict, convince, invincible, evict, vanquish<span class='lang'>Fr. vaincre · It. vincere · Sp. vencer</span>",
+"quam":"— (quantum and quantity come from its relative quantus)",
+"deus, dei (m.)":"deity, deify, deism, adieu, adios<span class='lang'>Fr. dieu · It. dio · Sp. dios</span>",
+"ira, -ae (f.)":"ire, irate, irascible<span class='lang'>It. ira · Sp. ira</span>",
+"in (+ acc.)":"in, into (and the prefix in-: invade, induce)<span class='lang'>Fr. en · It. in · Sp. en</span>",
+"in (+ abl.)":"in (and the prefix in-: inhabit, inscribe)<span class='lang'>Fr. en · It. in · Sp. en</span>",
+"res, rei (f.)":"real, reality, republic (res publica), rebus<span class='lang'>Fr. rien · Sp. nada (from res nata)</span>",
+"qui, quae, quod":"quorum (the number 'of whom' needed), quod erat demonstrandum",
+"par, paris":"par, parity, pair, peer, compare, disparity<span class='lang'>Fr. pair · It. pari · Sp. par</span>",
+"exitium, -i (n.)":"exit (from exeo, go out), exeunt",
+"vigeo, vigere, vigui":"vigour, vigorous, invigorate<span class='lang'>Fr. vigueur · It. vigore · Sp. vigor</span>",
+"cado, cadere, cecidi, casum":"case, casual, cadence, cascade, accident, decadent, occasion<span class='lang'>Fr. choir · It. cadere · Sp. caer</span>",
+"corpus, corporis (n.)":"corpse, corps, corporal, corporation, corpulent, incorporate<span class='lang'>Fr. corps · It. corpo · Sp. cuerpo</span>",
+"ille, illa, illud":"— but it became the definite article: Fr. le, la · It. il, la · Sp. el, la",
+"labor, laboris (m.)":"labour, laborious, laboratory, elaborate, collaborate<span class='lang'>Fr. labeur · It. lavoro · Sp. labor</span>",
+"tolero, tolerare":"tolerate, tolerance, tolerable, intolerant",
+"animus, -i (m.)":"animosity, magnanimous, unanimous, equanimity, animated",
+"audax, audacis":"audacious, audacity (from audeo, dare)<span class='lang'>Fr. audace · It. audace · Sp. audaz</span>",
+"sui (reflexive)":"suicide, sui generis",
+"obtego, obtegere, obtexi, obtectum":"— (from tego, cover: protect, detect, tegument)",
+"criminator, criminatoris (m.)":"crime, criminal, incriminate, recrimination",
+"iuxta":"juxtapose, juxtaposition",
+"adulatio, adulationis (f.)":"adulation, adulate",
+"superbia, -ae (f.)":"superb<span class='lang'>Fr. superbe · It. superbia (pride) · Sp. soberbia</span>",
+"palam":"—",
+"compono, componere, composui, compositum":"compose, composite, component, composure, compost, compound",
+"pudor, pudoris (m.)":"impudent, impudence (without shame)<span class='lang'>It. pudore · Sp. pudor</span>",
+"intus":"— (its relative intestinus gives intestine)",
+"summus, -a, -um":"sum, summit, summary, consummate<span class='lang'>Fr. sommet · It. sommo · Sp. sumo</span>",
+"apiscor, apisci, aptus sum":"apt, aptitude, adapt, adept (adipiscor)",
+"libido, libidinis (f.)":"libido, libidinous",
+"is, ea, id":"id (Freud's 'it'), i.e. (id est)",
+"causa, -ae (f.)":"cause, because, causal, accuse, excuse<span class='lang'>Fr. chose (thing) · It. cosa · Sp. cosa</span>",
+"modo":"— (from modus: mode, model, modern, moderate)",
+"largitio, largitionis (f.)":"largesse, large (from largus, generous)",
+"luxus, -us (m.)":"luxury, luxurious, luxuriant, deluxe",
+"saepe (comparative)":"—",
+"industria, -ae (f.)":"industry, industrious, industrial<span class='lang'>Fr. industrie · It. industria · Sp. industria</span>",
+"ac":"—",
+"vigilantia, -ae (f.)":"vigilance, vigilant, vigil, vigilante",
+"haud":"—",
+"minus":"minus, minor, minority, minimum, diminish<span class='lang'>Fr. moins · It. meno · Sp. menos</span>",
+"noxius, -a, -um":"noxious, obnoxious, innocuous (from noceo, harm)",
+"quotiens":"quotient (how many times one number goes into another)",
+"paro, parare, paravi, paratum":"prepare, repair, separate, apparatus, parade<span class='lang'>Fr. parer · It. parare · Sp. parar</span>",
+"regnum, -i (n.)":"reign, interregnum, regnal<span class='lang'>Fr. règne · It. regno · Sp. reino</span>",
+"fingo, fingere, finxi, fictum":"fiction, fictitious, figment, feign, effigy",
+"forte":"— (the adverb 'by chance', from fors, chance: fortune, fortuitous)",
+"dies, diei (m.)":"diary, dial, diurnal, meridian (medius + dies), dismal (dies mali)<span class='lang'>It. dì · Sp. día</span>",
+"Caesar, Caesaris (m.)":"Kaiser, Tsar / Czar, caesarean<span class='lang'>Ger. Kaiser · Russ. tsar</span>",
+"anceps, ancipitis":"— ('two-headed': ambi- + caput)",
+"periculum, -i (n.)":"peril, perilous, imperil<span class='lang'>Fr. péril · It. pericolo · Sp. peligro</span>",
+"offero, offerre, obtuli, oblatum":"offer, offering, oblation",
+"praebeo, praebere, praebui":"— (from prae + habeo: provide)",
+"ipse, ipsa, ipsum":"ipso facto, ipsissima verba",
+"materies, -ei (f.)":"matter, material, materialise<span class='lang'>Fr. matière · It. materia · Sp. materia</span>",
+"cur":"—",
+"amicitia, -ae (f.)":"amity, amicable (from amicus, friend)<span class='lang'>Fr. amitié · It. amicizia · Sp. amistad</span>",
+"constantia, -ae (f.)":"constancy, constant, Constance",
+"magis":"magisterial, magistrate, master (magister, the 'greater' one)<span class='lang'>Sp. más · It. mai</span>",
+"fido, fidere, fisus sum (+ dat.)":"confide, confident, fidelity, diffident, Fido (a faithful dog)",
+"vescor, vesci (deponent)":"—",
+"villa, -ae (f.)":"villa, village, villain (originally a farm worker)<span class='lang'>Fr. ville (town) · It. villa</span>",
+"vocabulum, -i (n.)":"vocabulary (from voco, call: vocal, vocation)",
+"Spelunca, -ae (f.)":"spelunking (caving), speleology — Sperlonga is the town today",
+"mare, maris (n.)":"marine, maritime, mariner, submarine, marina<span class='lang'>Fr. mer · It. mare · Sp. mar</span>",
+"Amunclanus, -a, -um":"— (from Amyclae, a coastal town near Spelunca)",
+"inter (+ acc.)":"inter-: international, interval, interrupt, intercede",
+"Fundanus, -a, -um":"— (from Fundi, modern Fondi)",
+"mons, montis (m.)":"mount, mountain, promontory, amount, surmount<span class='lang'>Fr. mont · It. monte · Sp. monte</span>",
+"nativus, -a, -um":"native, nativity, nation, nature (from nascor, be born)",
+"specus, -us (m.)":"— (related to spelunca and to the Greek speos, cave)",
+"os, oris (n.)":"oral, oration, orator, oracle, orifice, osculate",
+"labor, labi, lapsus sum":"lapse, collapse, elapse, relapse",
+"repente":"— (repentinus: sudden)",
+"saxum, -i (n.)":"saxifrage ('rock-breaker', a plant)<span class='lang'>It. sasso</span>",
+"obruo, obruere, obrui, obrutum":"—",
+"quidam, quaedam, quoddam":"—",
+"minister, ministri (m.)":"minister, ministry, administer<span class='lang'>Fr. ministre · It. ministro · Sp. ministro</span>",
+"hinc":"—",
+"metus, -us (m.)":"— (fear: English takes 'fear' words from terreo and timeo instead)",
+"omnis, omne":"omnibus (bus), omnipotent, omniscient, omnivore",
+"fuga, -ae (f.)":"fugue, fugitive, refuge, centrifugal, subterfuge",
+"convivium, -i (n.)":"convivial, conviviality (con + vivo: living together)",
+"celebro, celebrare":"celebrate, celebration, celebrity<span class='lang'>Fr. célébrer · It. celebrare · Sp. celebrar</span>",
+"genu, -us (n.)":"genuflect, genuflexion<span class='lang'>Fr. genou · It. ginocchio</span>",
+"uterque, utraque, utrumque":"—",
+"manus, -us (f.)":"manual, manufacture, manuscript, manicure, manipulate, emancipate<span class='lang'>Fr. main · It. mano · Sp. mano</span>",
+"super (+ acc.)":"super-: superior, supervise, superfluous, supernatural",
+"super":"super-: superior, supervise, superfluous, supernatural",
+"suspendo, suspendere, suspendi, suspensum":"suspend, suspense, suspension, suspender",
+"oppono, opponere, opposui, oppositum":"oppose, opposite, opponent",
+"se":"suicide (sui + caedo)<span class='lang'>Fr. se · It. si · Sp. se</span>",
+"incido, incidere, incidi":"incident, incidence, incidental (in + cado: fall upon)",
+"atque":"—",
+"habitus, -us (m.)":"habit, habitual, habitat (from habeo, have / hold)",
+"talis, tale":"—<span class='lang'>Fr. tel · It. tale · Sp. tal</span>",
+"reperio, reperire, repperi, repertum":"repertoire, repertory (a store of things 'found')",
+"a / ab (+ abl.)":"ab-: abduct, absent, abnormal, abstain",
+"miles, militis (m.)":"military, militant, militia, militate",
+"subsidium, -i (n.)":"subsidy, subsidiary, subside",
+"venio, venire, veni, ventum":"advent, convene, event, invent, prevent, venue, adventure<span class='lang'>Fr. venir · It. venire · Sp. venir</span>",
+"magnus, maior, maximus":"magnitude, magnify, major, majority, maximum, mayor",
+"ex (+ abl.)":"ex-: exit, export, extract, exclude",
+"quamquam":"—",
+"exitiosus, -a, -um":"— (from exitium, ruin; cf. exit)",
+"suadeo, suadere, suasi, suasum":"persuade, dissuade, persuasive, suave",
+"ut":"—",
+"anxius, -a, -um":"anxious, anxiety",
+"cum (+ abl.)":"com- / con-: combine, connect, companion (bread-sharer)<span class='lang'>It. con · Sp. con</span>",
+"fides, fidei (f.)":"faith, fidelity, confidence, bona fide, infidel, affidavit<span class='lang'>Fr. foi · It. fede · Sp. fe</span>",
+"audio, audire, audivi, auditum":"audio, audience, audible, audition, auditorium<span class='lang'>Fr. ouïr · It. udire · Sp. oír</span>",
+"procul":"—",
+"incolo, incolere, incolui, incultum":"— (from colo, dwell / farm: colony, cultivate, culture)",
+"fundo, fundare, fundavi, fundatum":"found, foundation, fund, fundamental, profound",
+"vetustus, -a, -um":"veteran, inveterate (from vetus, old)",
+"urbs, urbis (f.)":"urban, urbane, suburb, suburban, conurbation",
+"Agyllinus, -a, -um":"— (Agylla = Caere, modern Cerveteri)",
+"sedes, sedis (f.)":"see (a bishop's seat), sediment, sedentary (from sedeo, sit)",
+"ubi":"ubiquitous (everywhere)",
+"Lydius, -a, -um":"Lydian (a musical mode)",
+"quondam":"quondam (former, in English)",
+"gens, gentis (f.)":"gentle, gentile, genteel, gentleman<span class='lang'>Fr. gens · It. gente · Sp. gente</span>",
+"bellum, -i (n.)":"bellicose, belligerent, rebel, antebellum",
+"praeclarus, -a, -um":"— (from clarus: clear, clarity, declare)",
+"iugum, -i (n.)":"conjugal, conjugate, subjugate (all from 'yoke')",
+"insido, insidere, insedi, insessum":"— (from sedeo, sit: session, reside)",
+"Etruscus, -a, -um":"Etruscan, Tuscany, Tuscan",
+"hic, haec, hoc":"ad hoc, post hoc",
+"multus, -a, -um":"multiple, multiply, multitude, multi-<span class='lang'>It. molto · Sp. mucho</span>",
+"floreo, florere, florui":"flourish, florid, floral, florist, flora (from flos, flower)",
+"annus, -i (m.)":"annual, anniversary, annuity, biennial, perennial, AD (anno Domini)<span class='lang'>Fr. an · It. anno · Sp. año</span>",
+"rex, regis (m.)":"regal, regicide, regent, royal, reign<span class='lang'>Fr. roi · It. re · Sp. rey</span>",
+"deinde":"—",
+"superbus, -a, -um":"superb<span class='lang'>Fr. superbe · It. superbo · Sp. soberbio</span>",
+"imperium, -i (n.)":"empire, imperial, imperious, imperialism",
+"saevus, -a, -um":"—",
+"teneo, tenere, tenui, tentum":"tenant, tenacious, tenure, contain, retain, sustain, tenor<span class='lang'>Fr. tenir · It. tenere · Sp. tener</span>",
+"Mezentius, -i (m.)":"—",
+"arma, armorum (n. pl.)":"arms, armour, army, armada, alarm (all'arme, 'to arms!')",
+"arma, -orum (n. pl.)":"arms, armour, army, armada, alarm (all'arme, 'to arms!')",
+"quis, quid":"quiddity, quid pro quo, quibble<span class='lang'>Fr. qui · It. chi · Sp. quien</span>",
+"memoro, memorare, memoravi, memoratum":"memory, memorial, memorable, commemorate, memoir",
+"infandus, -a, -um":"infant (one who cannot speak) — from in + for, fari, speak",
+"caedes, caedis (f.)":"— (from caedo, cut / kill: homicide, suicide, incision)",
+"factum, -i (n.)":"fact, factual, feat, feature (from facio, do)",
+"tyrannus, -i (m.)":"tyrant, tyranny, tyrannical (Greek tyrannos)",
+"efferus, -a, -um":"— (ferus, wild: ferocious, feral, fierce)",
+"caput, capitis (n.)":"capital, captain, chapter, decapitate, per capita, chief<span class='lang'>Fr. chef · It. capo · Sp. cabeza</span>",
+"genus, generis (n.)":"genus, gender, general, generation, generic, genre",
+"reservo, reservare, reservavi, reservatum":"reserve, reservation, reservoir",
+"mortuus, -a, -um":"mortuary, mortal, mortgage (a 'dead pledge')<span class='lang'>Fr. mort · It. morto · Sp. muerto</span>",
+"quin":"—",
+"etiam":"—",
+"iungo, iungere, iunxi, iunctum":"join, joint, junction, conjunction, junta, adjunct",
+"vivus, -a, -um":"vivid, vivacious, revive, survive, viviparous, vivisection<span class='lang'>Fr. vif · It. vivo · Sp. vivo</span>",
+"tormentum, -i (n.)":"torment (from torqueo, twist: torture, torque, contort)",
+"sanies, -ei (f.)":"sanious (medical: discharging bloody pus)",
+"tabum, -i (n.)":"—",
+"fluo, fluere, fluxi":"fluid, fluent, flux, influence, affluent, superfluous",
+"complexus, -us (m.)":"complex, complexion (from complector, embrace)",
+"miser, misera, miserum":"miser, misery, miserable, commiserate",
+"longus, -a, -um":"long, longitude, elongate, prolong<span class='lang'>Fr. long · It. lungo · Sp. largo</span>",
+"sic":"sic (in quotations: 'thus, as written')<span class='lang'>It. sì · Sp. sí</span>",
+"mors, mortis (f.)":"mortal, immortal, mortality, mortuary, post-mortem<span class='lang'>Fr. mort · It. morte · Sp. muerte</span>",
+"neco, necare, necavi, necatum":"internecine (mutually destructive)<span class='lang'>Fr. noyer (drown)</span>",
+"at":"—",
+"fessus, -a, -um":"— (defessus, indefessus)",
+"tandem":"tandem (a bicycle for two, ridden 'at length')",
+"civis, civis (m.)":"civic, civil, civilian, civilisation, city (civitas)",
+"furo, furere":"fury, furious, furore",
+"armatus, -a, -um":"armed, army, armada, armadillo ('little armed one')",
+"circumsisto, circumsistere, circumsteti":"circumstance (from circum + sto, stand around)",
+"domus, -us (f.)":"domestic, domicile, dome, dominate (dominus = master of the house)",
+"obtrunco, obtruncare":"truncate, trunk (from truncus, maimed)",
+"socius, -i (m.)":"social, society, sociable, associate",
+"ignis, ignis (m.)":"ignite, ignition, igneous",
+"ad (+ acc.)":"ad-: advent, adhere, admit, add<span class='lang'>Fr. à · It. a · Sp. a</span>",
+"fastigium, -i (n.)":"— (the gable, peak of a roof)",
+"iacto, iactare":"— (from iacio, throw: eject, inject, project, reject, jet)",
+"Rutuli, -orum (m. pl.)":"—",
+"elabor, elabi, elapsus sum":"elapse (time slips away), lapse",
+"ager, agri (m.)":"agriculture, agrarian, acre (a Germanic cousin), peregrine",
+"confugio, confugere, confugi":"— (from fugio: fugitive, refuge)",
+"Turnus, -i (m.)":"—",
+"defendo, defendere, defendi, defensum":"defend, defence, defensive, fend, fence<span class='lang'>Fr. défendre · It. difendere</span>",
+"hospes, hospitis (m.)":"host, hospitable, hospital, hotel, hostel, hospice",
+"ergo":"ergo (therefore, in English)",
+"furiae, -arum (f. pl.)":"fury, the Furies",
+"surgo, surgere, surrexi, surrectum":"surge, insurgent, resurrection, source (from surgere, rise)",
+"Etruria, -ae (f.)":"Etruscan, Tuscany",
+"iustus, -a, -um":"just, justice, justify, adjust<span class='lang'>Fr. juste · It. giusto · Sp. justo</span>",
+"supplicium, -i (n.)":"supplicate, supplicant (a punishment began as a kneeling to the gods)",
+"praesens, praesentis":"present, presence, presentation",
+"Mars, Martis (m.)":"March, martial, Mars (the planet), Martian<span class='lang'>Fr. mars · It. marzo · Sp. marzo</span>",
+"reposco, reposcere":"—",
+"medius, -a, -um":"medium, median, mediate, Mediterranean, medieval, mean<span class='lang'>Fr. mi- · It. mezzo · Sp. medio</span>",
+"exsulto, exsultare":"exult, exultation (from salio, leap: salient, sally)",
+"Amazon, Amazonis (f.)":"Amazon (the river, named by Spanish explorers)",
+"exsero, exserere, exserui, exsertum":"— (from sero, join: series, assert, desert, exert)",
+"latus, lateris (n.)":"lateral, bilateral, unilateral, collateral",
+"pugna, -ae (f.)":"pugnacious, repugnant, impugn, pugilist",
+"pharetratus, -a, -um":"— (Greek pharetra, quiver)",
+"Camilla, -ae (f.)":"Camilla (the name)",
+"lentus, -a, -um":"lentamente / lento (music: slow)",
+"spargo, spargere, sparsi, sparsum":"sparse, disperse, aspersion, intersperse",
+"hastile, hastilis (n.)":"— (hasta, spear)",
+"denso, densare":"dense, density, condense",
+"validus, -a, -um":"valid, validate, invalid (from valeo, be strong: value, valiant)",
+"dextra, -ae (f.)":"dexterity, dextrous, ambidextrous",
+"rapio, rapere, rapui, raptum":"rapid, rapture, rapacious, ravish, rape",
+"indefessus, -a, -um":"indefatigable (a cousin: in + de + fatigo)",
+"bipennis, bipennis (f.)":"— (bi- two + penna, wing / edge: biped, pen)",
+"aureus, -a, -um":"aureole, auriferous, oriole; Au (chemical symbol for gold)<span class='lang'>Fr. or · It. oro · Sp. oro</span>",
+"umerus, -i (m.)":"humerus (the upper-arm bone)",
+"sono, sonare":"sound, sonic, sonorous, resonate, sonnet, sonar",
+"arcus, -us (m.)":"arc, arch, archer, arcade<span class='lang'>Fr. arc · It. arco · Sp. arco</span>",
+"Diana, -ae (f.)":"Diana (the name)",
+"si":"—<span class='lang'>Fr. si · It. se · Sp. si</span>",
+"quando":"—<span class='lang'>Fr. quand · It. quando · Sp. cuando</span>",
+"tergum, -i (n.)":"tergiversate (to turn one's back, to be evasive)",
+"pello, pellere, pepuli, pulsum":"pulse, compel, expel, repel, propel, repulsive",
+"recedo, recedere, recessi":"recede, recess, recession",
+"spiculum, -i (n.)":"spicule (a small sharp point)",
+"converto, convertere, converti, conversum":"convert, conversion, converse",
+"fugio, fugere, fugi":"fugitive, refuge, refugee, centrifugal, subterfuge",
+"derigo, derigere, derexi":"direct, direction (from rego, guide)",
+"circum":"circum-: circumference, circumstance, circumnavigate, circus",
+"lego, legere, legi, lectum":"elect, select, collect, legible, lecture, legend",
+"comes, comitis (m./f.)":"count (the title), county, concomitant<span class='lang'>Fr. comte · It. conte · Sp. conde</span>",
+"Larina, -ae (f.)":"—",
+"virgo, virginis (f.)":"virgin, Virgo (the zodiac sign), Virginia",
+"Tulla, -ae (f.)":"—",
+"aeratus, -a, -um":"— (from aes, aeris: bronze, copper)",
+"quatio, quatere, –, quassum":"quash, concussion, percussion, rescue (via Old French)",
+"Tarpeia, -ae (f.)":"the Tarpeian Rock (from which traitors were thrown)",
+"securis, securis (f.)":"— (from seco, cut: section, sector, insect, dissect)",
+"Italis, Italidis (f.)":"Italy, Italian, italic",
+"decus, decoris (n.)":"decorate, decorum, decorous, decent",
+"sui":"suicide, sui generis",
+"dius, -a, -um":"— (divine; related to divus)",
+"deligo, deligere, delegi, delectum":"select, elect (cousins from lego)",
+"pax, pacis (f.)":"peace, pacify, pacifist, Pacific, appease<span class='lang'>Fr. paix · It. pace · Sp. paz</span>",
+"bonus, -a, -um":"bonus, bounty, bonanza, bona fide<span class='lang'>Fr. bon · It. buono · Sp. bueno</span>",
+"ministra, -ae (f.)":"minister, administer (from minister, attendant)",
+"telum, -i (n.)":"— (a missile: tele- in telephone is Greek, not this)",
+"primus, -a, -um":"prime, primary, primitive, premier, prince (princeps)",
+"postremus, -a, -um":"posterior, posterity, postpone (from post, after)",
+"asper, aspera, asperum":"asperity, exasperate",
+"deicio, deicere, deieci, deiectum":"dejected, dejection",
+"aut":"—",
+"quot":"quota, quotient, quote",
+"humus, -i (f.)":"humus (soil), humble, humility, exhume, human",
+"morior, mori, mortuus sum":"mortal, mortuary, moribund<span class='lang'>Fr. mourir · It. morire · Sp. morir</span>",
+"fundo, fundere, fudi, fusum":"fuse, fusion, confuse, refund, profuse, transfusion",
+"emitto, emittere, emisi, emissum":"emit, emission, emissary",
+"contorqueo, contorquere, contorsi":"contort, contortion (from torqueo, twist: torture, torque)",
+"tot":"—",
+"Phrygius, -a, -um":"the Phrygian cap (the 'liberty cap')",
+"vir, viri (m.)":"virile, virility, virtue (virtus: what makes a man), triumvirate",
+"Ornytus, -i (m.)":"—",
+"ignotus, -a, -um":"ignorant, ignore (from ignosco / gnosco, know)",
+"equus, -i (m.)":"equestrian, equine<span class='lang'>Sp. yegua (mare)</span>",
+"venator, venatoris (m.)":"venison (hunted meat), venery (hunting)",
+"Iapyx, Iapygis":"— (the Iapygians of Apulia, south-east Italy)",
+"fero, ferre, tuli, latum":"transfer, refer, offer, fertile, relate, translate, ferry",
+"pellis, pellis (f.)":"pelt, pellicle, surplice (super + pellicia, over a fur coat)",
+"latus, -a, -um":"latitude (breadth)",
+"eripio, eripere, eripui, ereptum":"— (from rapio, snatch: rapid, rapture)",
+"iuvencus, -i (m.)":"— (a young bull; related to iuvenis)",
+"pugnator, pugnatoris (m.)":"pugnacious, pugilist",
+"operio, operire, operui, opertum":"— (its opposite aperio, open, gives aperture and overture)",
+"ingens, ingentis":"—",
+"hiatus, -us (m.)":"hiatus (a gap, a break)",
+"mala, -ae (f.)":"malar bone (the cheekbone)",
+"tego, tegere, texi, tectum":"protect, detect, tegument, tile (tegula), toga",
+"lupus, -i (m.)":"lupine, lupus (a disease), Lupercalia<span class='lang'>Fr. loup · It. lupo · Sp. lobo</span>",
+"dens, dentis (m.)":"dental, dentist, trident, indent, dandelion (dent de lion)",
+"albus, -a, -um":"albino, album, albumen, Albion (the 'white' cliffs)",
+"agrestis, -e":"agriculture, agrarian (from ager, field)",
+"armo, armare":"armed, armament, army, armour",
+"sparus, -i (m.)":"—",
+"caterva, -ae (f.)":"—",
+"verto, vertere, verti, versum":"convert, divert, revert, version, versus, verse, vertebra",
+"totus, -a, -um":"total, totality, tout<span class='lang'>Fr. tout · It. tutto · Sp. todo</span>",
+"vertex, verticis (m.)":"vertex, vertical, vertigo",
+"supra":"supra-: supranational, supremacy, supreme",
+"excipio, excipere, excepi, exceptum":"except, exception, excerpt (a cousin)",
+"neque":"—",
+"enim":"—",
+"agmen, agminis (n.)":"— (from ago, drive: agent, agile, act)",
+"traicio, traicere, traieci, traiectum":"trajectory, traject (from trans + iacio, throw across)",
+"inimicus, -a, -um":"inimical, enemy<span class='lang'>Fr. ennemi · It. nemico · Sp. enemigo</span>",
+"pectus, pectoris (n.)":"pectoral, expectorate<span class='lang'>It. petto · Sp. pecho</span>",
+"for, fari, fatus sum":"fate (fatum, 'what has been spoken'), infant, fable, fame",
+"silva, -ae (f.)":"sylvan, Sylvia, Pennsylvania ('Penn's woods')",
+"tu, tui":"thou (a Germanic cousin)<span class='lang'>Fr. tu · It. tu · Sp. tú</span>",
+"Tyrrhenus, -i (m.)":"the Tyrrhenian Sea (off the west coast of Italy)",
+"fera, -ae (f.)":"feral, ferocious, fierce",
+"agito, agitare":"agitate, agitation, agitator",
+"puto, putare, putavi":"compute, computer, dispute, reputation, amputate",
+"advenio, advenire, adveni":"advent, adventure",
+"vester, vestra, vestrum":"—<span class='lang'>Fr. votre · It. vostro · Sp. vuestro</span>",
+"muliebris, -e":"muliebrity (womanliness); from mulier, woman<span class='lang'>Sp. mujer · It. moglie (wife)</span>",
+"verbum, -i (n.)":"verb, verbal, verbatim, proverb, verbose",
+"redarguo, redarguere, redargui":"argue, argument (from arguo, prove)",
+"nomen, nominis (n.)":"noun, name, nominal, nominate, denomination<span class='lang'>Fr. nom · It. nome · Sp. nombre</span>",
+"tamen":"—",
+"levis, -e":"levity, lever, alleviate, elevate, relieve",
+"manes, manium (m. pl.)":"— (the spirits of the dead)",
+"refero, referre, rettuli, relatum":"refer, referee, reference, relate, relation"
+};
+
+/* ===== WORD HELP (Off / Meaning / Parse / Etymology) — added 26 Sept 2026, same choices as the Georgics helper =====
+   Meaning = dictionary form + meaning · Parse = dictionary form, meaning and the grammar of this form ·
+   Etymology = only the words that have come from it; the meaning stays hidden until he asks. Choice is remembered on this device. */
+let WH=(function(){ try{ return localStorage.getItem('hv_wordhelp')||'mean'; }catch(e){ return 'mean'; } })();
+function whBar(){
+  return '<div class="whbar"><span class="whl">Word help:</span><span class="seg">'
+    +[['off','Off'],['mean','Meaning'],['parse','Parse'],['ety','Etymology']].map(function(p){
+      return '<button type="button" data-m="'+p[0]+'" class="'+(WH===p[0]?'on':'')+'" onclick="setWH(\''+p[0]+'\')">'+p[1]+'</button>'; }).join('')
+    +'</span><span class="whh">'+whHint()+'</span></div>';
+}
+function whHint(){ return WH==='off' ? 'Word help is off.' : 'Tap any Latin word.'; }
+function setWH(m){ WH=m; try{ localStorage.setItem('hv_wordhelp',m); }catch(e){}
+  document.querySelectorAll('.whbar .seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.m===m); });
+  document.querySelectorAll('.whbar .whh').forEach(function(h){ h.textContent=whHint(); });
+  if(typeof hidePop==='function') hidePop(); }
+function etyFor(dict){ var k=String(dict||'').replace(/ \+ -que$/,''); return (typeof ETY!=='undefined'&&ETY[k])||'—'; }
+function whEl(id,cls){ var el=document.getElementById(id); if(!el){ el=document.createElement('div'); el.id=id; el.className=cls; document.querySelector('#pop .in').appendChild(el); } return el; }
+function showWordHelp(w){
+  var pop=document.getElementById('pop'); if(!pop) return;
+  var pw=document.getElementById('pw'), pl=document.getElementById('pl'), pm=document.getElementById('pm'), pg=document.getElementById('pg');
+  var pe=whEl('pe','pe'), pb=whEl('pb','pb');
+  pw.textContent=String(w[0]).replace(/[,.;:?!()‘’“”"]/g,'');
+  pl.textContent=w[1]; pm.textContent=w[2]; pg.textContent=w[3];
+  pe.innerHTML=''; pb.innerHTML='';
+  [pl,pm,pg,pe,pb].forEach(function(e){ e.style.display='none'; });
+  if(WH==='mean'){ pl.style.display=''; pm.style.display=''; }
+  else if(WH==='parse'){ pl.style.display=''; pm.style.display=''; pg.style.display=''; }
+  else if(WH==='ety'){
+    pe.innerHTML='<span class="pk">words that come from it</span>'+etyFor(w[1]); pe.style.display='';
+    pb.innerHTML='<button type="button" class="showm">Show meaning</button>'; pb.style.display='';
+    pb.querySelector('button').onclick=function(){ pl.style.display=''; pm.style.display=''; pb.style.display='none'; };
+  }
+  pop.style.display='block';
+}
+
+</script>
+<script>
+// Each word: [as printed, dictionary form, meaning here, grammar]
+const S = [{"lines": "648–649", "w": [["at", "at", "but", "conjunction"], ["medias", "medius, -a, -um", "the middle (of)", "acc. pl. fem. – agrees with caedes"], ["inter", "inter (+ acc.)", "among, in the midst of", "preposition – takes the accusative"], ["caedes", "caedes, caedis (f.)", "slaughter", "acc. pl. after inter"], ["exsultat", "exsulto, exsultare", "she leaps about, exults, revels", "3rd person sing. present – MAIN VERB"], ["Amazon,", "Amazon, Amazonis (f.)", "an Amazon (a warrior-woman)", "nom. sing. – subject"], ["unum", "unus, una, unum", "one", "acc. sing. neut. – agrees with latus"], ["exserta", "exsero, exserere, exserui, exsertum", "having bared, with … bared", "perfect passive participle, nom. sing. fem. – agrees with Camilla"], ["latus", "latus, lateris (n.)", "side (of the body)", "acc. sing. – 'bared as to one side' (accusative of respect)"], ["pugnae,", "pugna, -ae (f.)", "for the fight", "dat. sing. – purpose"], ["pharetrata", "pharetratus, -a, -um", "wearing a quiver, quiver-bearing", "nom. sing. fem. – agrees with Camilla"], ["Camilla,", "Camilla, -ae (f.)", "Camilla", "nom. sing. – in apposition to Amazon"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb.", "a": [4], "e": "exsultat – the -t ending tells you it is 3rd person singular: 'he/she exults'."}, {"t": "tap", "p": "Step 2 – Tap the subject word (the first noun in the nominative that could do the verb).", "a": [5], "e": "Amazon is the subject. Camilla, at the end, tells you which Amazon – they are the same person (apposition)."}, {"t": "mcq", "p": "Which word controls medias … caedes?", "o": ["at", "inter", "exsultat"], "a": 1, "e": "inter + accusative: 'in the midst of'. Virgil puts medias before inter – a common poetic word order."}, {"t": "mcq", "p": "exserta is a participle agreeing with Camilla, and latus is accusative. What does unum exserta latus mean?", "o": ["a broad single side", "having bared one side", "one side bared her"], "a": 1, "e": "This is a Greek idiom (accusative of respect): 'bared as to one side' → 'with one side bared'. Careful: this latus is the noun 'side' (latus, lateris), not the adjective 'broad'."}, {"t": "mcq", "p": "pugnae is dative. What is the best translation?", "o": ["of the fight", "for the fight", "by the fight"], "a": 1, "e": "Dative of purpose: 'for the fight' / 'for battle'."}], "ch": [["at medias inter caedes", "But in the midst of the slaughter"], ["exsultat Amazon", "an Amazon exults"], ["unum exserta latus pugnae", "with one side bared for battle"], ["pharetrata Camilla", "quiver-bearing Camilla"]], "ord": [0, 1, 2, 3], "m": "But in the midst of the slaughter an Amazon exults, with one side bared for battle – Camilla with her quiver."}, {"lines": "650–651", "w": [["et", "et", "and", "conjunction"], ["nunc", "nunc", "now", "adverb – nunc … nunc = 'now … now' / 'at one moment … at another'"], ["lenta", "lentus, -a, -um", "pliant, tough, whippy", "acc. pl. neut. – agrees with hastilia"], ["manu", "manus, -us (f.)", "from her hand", "abl. sing."], ["spargens", "spargo, spargere, sparsi, sparsum", "scattering, showering", "present participle, nom. sing. – describes Camilla"], ["hastilia", "hastile, hastilis (n.)", "spears, javelins", "acc. pl. – object of spargens and denset"], ["denset,", "denso, densare", "she thickens / showers them thick and fast", "3rd person sing. present – MAIN VERB"], ["nunc", "nunc", "now", "adverb"], ["validam", "validus, -a, -um", "strong, sturdy", "acc. sing. fem. – agrees with bipennem"], ["dextra", "dextra, -ae (f.)", "in her right hand", "abl. sing."], ["rapit", "rapio, rapere, rapui, raptum", "she snatches, seizes", "3rd person sing. present – MAIN VERB"], ["indefessa", "indefessus, -a, -um", "tireless", "nom. sing. fem. – describes Camilla"], ["bipennem;", "bipennis, bipennis (f.)", "double-headed axe", "acc. sing. – object of rapit"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the TWO main verbs (the nunc … nunc pattern gives you one in each half).", "a": [6, 10], "e": "denset and rapit. spargens is a participle ('scattering'), not a main verb."}, {"t": "mcq", "p": "Step 2 – There is no subject word. Who is doing these things?", "o": ["the Trojans", "Camilla", "Diana"], "a": 1, "e": "Both verbs are 3rd person singular and indefessa (nom. fem.) describes her: it is still Camilla – 'she'."}, {"t": "mcq", "p": "lenta agrees with which noun?", "o": ["manu", "hastilia", "bipennem"], "a": 1, "e": "lenta and hastilia are both neuter plural accusative: 'pliant javelins'."}, {"t": "mcq", "p": "validam agrees with which noun?", "o": ["dextra", "bipennem", "hastilia"], "a": 1, "e": "Both accusative singular feminine (bipennis is 3rd declension): 'a strong double axe'. Virgil splits them across the line – look for matching endings."}, {"t": "mcq", "p": "What does this sentence show about how Camilla fights?", "o": ["She fights only with a bow", "She mixes long-range and close weapons", "She fights only from a chariot"], "a": 1, "e": "She switches between long-range and close-combat weapons: javelins at one moment, the axe (hand-to-hand) at the next. She is versatile and never tires (indefessa)."}], "ch": [["et nunc lenta manu spargens hastilia", "and now, showering pliant javelins from her hand,"], ["denset", "she sends them thick and fast;"], ["nunc indefessa", "now, tireless,"], ["dextra rapit", "she seizes in her right hand"], ["validam … bipennem", "a sturdy double axe"]], "ord": [0, 1, 2, 3, 4], "m": "and now, showering pliant javelins from her hand, she sends them thick and fast; now, tireless, she seizes a sturdy double axe in her right hand;"}, {"lines": "652", "w": [["aureus", "aureus, -a, -um", "golden", "nom. sing. masc. – agrees with arcus"], ["ex", "ex (+ abl.)", "from, on", "preposition"], ["umero", "umerus, -i (m.)", "shoulder", "abl. sing. after ex"], ["sonat", "sono, sonare", "rings, rattles, sounds", "3rd person sing. present – MAIN VERB"], ["arcus", "arcus, -us (m.)", "bow", "nom. sing. (4th declension) – subject"], ["et", "et", "and", "conjunction"], ["arma", "arma, -orum (n. pl.)", "weapons, arms", "nom. pl. – second subject"], ["Dianae.", "Diana, -ae (f.)", "of Diana", "gen. sing."]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb.", "a": [3], "e": "sonat – 'rings / rattles'."}, {"t": "tap", "p": "Step 2 – Tap the TWO nouns that are the subject.", "a": [4, 6], "e": "arcus and arma. The verb is singular because it agrees with the nearest subject – common in Latin poetry."}, {"t": "mcq", "p": "aureus agrees with which word?", "o": ["umero", "arcus", "arma"], "a": 1, "e": "aureus (nom. sing. masc.) goes with arcus – 'the golden bow'. arcus is 4th declension, so the endings look the same but the declensions differ."}, {"t": "mcq", "p": "Why does Virgil call her weapons 'the arms of Diana'?", "o": ["She stole them from a temple", "She is Diana's devotee", "Diana is fighting beside her"], "a": 1, "e": "Camilla was dedicated to Diana as a baby: her father Metabus vowed her to the virgin huntress. Her bow and quiver mark her as Diana's follower."}], "ch": [["aureus arcus", "The golden bow"], ["et arma Dianae", "and the arms of Diana"], ["ex umero sonat", "ring out on her shoulder."]], "ord": [0, 1, 2], "m": "The golden bow and the arms of Diana ring out on her shoulder."}, {"lines": "653–654", "w": [["illa", "ille, illa, illud", "she", "nom. sing. fem. – subject"], ["etiam,", "etiam", "even, also", "adverb"], ["si", "si", "if", "conjunction – starts a clause"], ["quando", "quando", "ever (after si)", "si quando = 'if ever', 'whenever'"], ["in", "in (+ acc.)", "to, towards", "preposition"], ["tergum", "tergum, -i (n.)", "back", "acc. sing. – in tergum = 'backwards'"], ["pulsa", "pello, pellere, pepuli, pulsum", "driven, pushed", "perfect passive participle, nom. sing. fem. – agrees with illa"], ["recessit,", "recedo, recedere, recessi", "she retreated, withdrew", "3rd person sing. perfect – verb of the si clause"], ["spicula", "spiculum, -i (n.)", "arrows", "acc. pl. – object of derigit"], ["converso", "converto, convertere, converti, conversum", "turned round", "perfect passive participle, abl. sing. masc. – agrees with arcu"], ["fugientia", "fugio, fugere, fugi", "fleeing, flying", "present participle, acc. pl. neut. – agrees with spicula"], ["derigit", "derigo, derigere, derexi", "she aims, directs", "3rd person sing. present – MAIN VERB"], ["arcu.", "arcus, -us (m.)", "bow", "abl. sing."]], "qs": [{"t": "tap", "p": "Step 1 – Tap the MAIN verb. (Careful – one verb is trapped inside the si clause.)", "a": [11], "e": "derigit is the main verb. recessit belongs to the 'if ever' clause."}, {"t": "tap", "p": "Step 2 – Tap the subject.", "a": [0], "e": "illa – 'she' (Camilla)."}, {"t": "mcq", "p": "What does si quando in tergum pulsa recessit mean?", "o": ["if ever she was driven back and retreated", "when she drove them back", "if she ever struck them in the back"], "a": 0, "e": "pulsa is passive and feminine, so it describes her: 'driven back'. Literally 'if ever, having been driven back, she retreated'."}, {"t": "mcq", "p": "converso … arcu is ablative. What does it mean?", "o": ["from the golden bow", "with her bow turned round", "towards the bow"], "a": 1, "e": "'with her bow turned round' – she turns and shoots behind her while retreating."}, {"t": "mcq", "p": "fugientia grammatically agrees with spicula ('fleeing arrows'). Who is really in flight?", "o": ["The Trojans", "Camilla", "Diana"], "a": 1, "e": "Camilla is the one retreating – Virgil transfers the idea of flight to the arrows. This is the famous 'Parthian shot': shooting backwards while riding away."}], "ch": [["illa etiam", "she even"], ["si quando in tergum pulsa recessit", "if ever she is driven back and retreats,"], ["converso … arcu", "turns her bow round"], ["spicula fugientia derigit", "and aims arrows as she flees."]], "ord": [1, 0, 2, 3], "m": "Even when she is driven back and retreats, she turns her bow and aims arrows as she flees."}, {"lines": "655–658", "w": [["at", "at", "but", "conjunction"], ["circum", "circum", "around (her)", "adverb here"], ["lectae", "lego, legere, legi, lectum", "chosen", "perfect passive participle, nom. pl. fem. – agrees with comites"], ["comites,", "comes, comitis (m./f.)", "companions", "nom. pl. – subject"], ["Larinaque", "Larina, -ae (f.) + -que", "and Larina", "nom. sing."], ["virgo", "virgo, virginis (f.)", "maiden, girl", "nom. sing. – describes Larina"], ["Tullaque", "Tulla, -ae (f.) + -que", "and Tulla", "nom. sing."], ["et", "et", "and", "conjunction"], ["aeratam", "aeratus, -a, -um", "bronze", "acc. sing. fem. – agrees with securim"], ["quatiens", "quatio, quatere, –, quassum", "shaking, brandishing", "present participle, nom. sing. – describes Tarpeia"], ["Tarpeia", "Tarpeia, -ae (f.)", "Tarpeia", "nom. sing."], ["securim,", "securis, securis (f.)", "axe", "acc. sing. (i-stem: -im) – object of quatiens"], ["Italides,", "Italis, Italidis (f.)", "Italian women, daughters of Italy", "nom. pl. – in apposition to comites"], ["quas", "qui, quae, quod", "whom", "relative pronoun, acc. pl. fem. – refers to the companions"], ["ipsa", "ipse, ipsa, ipsum", "herself", "nom. sing. fem. – with Camilla"], ["decus", "decus, decoris (n.)", "an honour, a glory", "acc. sing. – 'as an honour'"], ["sibi", "sui", "for herself", "dat."], ["dia", "dius, -a, -um", "godlike, divine", "nom. sing. fem. – agrees with Camilla"], ["Camilla", "Camilla, -ae (f.)", "Camilla", "nom. sing. – subject of delegit"], ["delegit", "deligo, deligere, delegi, delectum", "chose, selected", "3rd person sing. perfect – verb of the quas clause"], ["pacisque", "pax, pacis (f.) + -que", "(both) of peace", "gen. sing."], ["bonas", "bonus, -a, -um", "good", "acc. pl. fem. – agrees with ministras"], ["bellique", "bellum, -i (n.) + -que", "and of war", "gen. sing."], ["ministras.", "ministra, -ae (f.)", "attendants, helpers", "acc. pl. – describes quas: 'as attendants'"]], "qs": [{"t": "mcq", "p": "Step 1 – There is no main verb in the first half! Which verb do you need to supply?", "o": ["sunt", "est", "erat"], "a": 0, "e": "sunt, 'are': 'Around her are her chosen companions'. comites is plural, so supply sunt. Latin poetry often leaves out parts of esse."}, {"t": "tap", "p": "Step 2 – Tap the main subject – the word for 'companions'.", "a": [3], "e": "comites. The three names that follow tell you who these companions are."}, {"t": "tap", "p": "Tap the three companions' names.", "a": [4, 6, 10], "e": "Larina, Tulla and Tarpeia. Watch the -que on Larinaque and Tullaque: 'and'."}, {"t": "mcq", "p": "aeratam agrees with which noun?", "o": ["Tarpeia", "securim", "virgo"], "a": 1, "e": "aeratam … securim – 'a bronze axe'. securis is an i-stem noun, so its accusative ends in -im."}, {"t": "mcq", "p": "In the quas clause, who chose whom?", "o": ["The companions chose Camilla", "Camilla chose the Italian women", "Diana chose Camilla"], "a": 1, "e": "Camilla is nominative (subject of delegit); quas is accusative (object) and refers back to the Italides."}, {"t": "mcq", "p": "decus sibi is best translated…", "o": ["as an honour to herself", "her own glory is chosen", "to her glorious self"], "a": 0, "e": "decus is in apposition to quas: she chose them 'as an honour to herself'."}, {"t": "mcq", "p": "pacisque bonas bellique ministras means…", "o": ["good attendants in both peace and war", "the good ministers of peace and war", "peace and war were good helpers"], "a": 0, "e": "bonas agrees with ministras. -que … -que = 'both … and'. The genitives mean 'in peace' and 'in war'."}], "ch": [["at circum lectae comites", "But around her are her chosen companions,"], ["Larinaque virgo Tullaque", "the maiden Larina and Tulla"], ["et aeratam quatiens Tarpeia securim,", "and Tarpeia brandishing a bronze axe,"], ["Italides,", "daughters of Italy,"], ["quas ipsa dia Camilla delegit", "whom godlike Camilla herself chose"], ["decus sibi", "as an honour to herself,"], ["pacisque bonas bellique ministras.", "good attendants in peace and in war."]], "ord": [0, 1, 2, 3, 4, 5, 6], "m": "But around her are her chosen companions, the maiden Larina and Tulla and Tarpeia brandishing a bronze axe, daughters of Italy, whom godlike Camilla herself chose as an honour to herself, good attendants in both peace and war."}, {"lines": "664–665", "w": [["quem", "quis, quid", "whom?", "interrogative, acc. sing. masc."], ["telo", "telum, -i (n.)", "with your weapon, spear", "abl. sing."], ["primum,", "primus, -a, -um", "first", "acc. sing. masc. – agrees with quem"], ["quem", "quis, quid", "whom?", "interrogative, acc. sing. masc."], ["postremum,", "postremus, -a, -um", "last", "acc. sing. masc. – agrees with quem"], ["aspera", "asper, aspera, asperum", "fierce, savage, harsh", "voc. sing. fem. – agrees with virgo"], ["virgo,", "virgo, virginis (f.)", "maiden", "voc. sing. – Camilla is being spoken to"], ["deicis?", "deicio, deicere, deieci, deiectum", "do you throw down, strike down", "2nd person sing. present – MAIN VERB"], ["aut", "aut", "or", "conjunction"], ["quot", "quot", "how many?", "indeclinable"], ["humi", "humus, -i (f.)", "on the ground", "locative"], ["morientia", "morior, mori, mortuus sum", "dying", "present participle, acc. pl. neut. – agrees with corpora"], ["corpora", "corpus, corporis (n.)", "bodies", "acc. pl. – object of fundis"], ["fundis?", "fundo, fundere, fudi, fusum", "do you pour out, lay low, strew", "2nd person sing. present – MAIN VERB"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the TWO main verbs.", "a": [7, 13], "e": "deicis and fundis – both end in -s: 2nd person singular, 'you'."}, {"t": "mcq", "p": "Step 2 – The verbs mean 'you'. Who is 'you'?", "o": ["Aeneas", "Camilla", "the reader"], "a": 1, "e": "The narrator turns and speaks directly to Camilla – this is called apostrophe. aspera virgo is vocative."}, {"t": "mcq", "p": "What case is aspera virgo?", "o": ["nominative", "vocative", "ablative"], "a": 1, "e": "Vocative – she is being addressed: 'fierce maiden'."}, {"t": "mcq", "p": "humi means…", "o": ["of the ground", "on the ground", "from the ground"], "a": 1, "e": "humi is locative: 'on the ground'."}, {"t": "mcq", "p": "Why might Virgil suddenly address Camilla directly here?", "o": ["He has lost track of the story", "For drama and admiration", "Camilla has asked him a question"], "a": 1, "e": "To add drama and admiration: so many are dying he can hardly count them. Apostrophe brings the narrator (and us) into the moment. The rhetorical questions stress how many men she kills."}], "ch": [["quem telo primum, quem postremum", "Whom first, whom last"], ["aspera virgo,", "fierce maiden,"], ["deicis?", "do you strike down with your spear?"], ["aut quot morientia corpora", "Or how many dying bodies"], ["humi fundis?", "do you lay low on the ground?"]], "ord": [0, 1, 2, 3, 4], "m": "Whom first, whom last, fierce maiden, do you strike down with your spear? Or how many dying bodies do you lay low on the ground?"}, {"lines": "676–677", "w": [["quotque", "quot + -que", "and as many (as)", "indeclinable – sets up tot ('so many')"], ["emissa", "emitto, emittere, emisi, emissum", "sent out, released", "perfect passive participle, acc. pl. neut. – agrees with spicula"], ["manu", "manus, -us (f.)", "from her hand", "abl. sing."], ["contorsit", "contorqueo, contorquere, contorsi", "she hurled, whirled", "3rd person sing. perfect – verb of the quot clause"], ["spicula", "spiculum, -i (n.)", "arrows, darts", "acc. pl."], ["virgo,", "virgo, virginis (f.)", "the maiden", "nom. sing. – subject of contorsit"], ["tot", "tot", "so many", "indeclinable"], ["Phrygii", "Phrygius, -a, -um", "Phrygian (= Trojan)", "nom. pl. masc. – agrees with viri"], ["cecidere", "cado, cadere, cecidi, casum", "fell", "= ceciderunt, 3rd person pl. perfect – MAIN VERB"], ["viri.", "vir, viri (m.)", "men", "nom. pl. – subject of cecidere"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the MAIN verb. (It is in the second half – the first verb belongs to the quot clause.)", "a": [8], "e": "cecidere. The -ere ending here is NOT an infinitive: cecid- is a perfect stem, so cecidere = ceciderunt, 'they fell'."}, {"t": "tap", "p": "Step 2 – Tap the subject of the main verb.", "a": [9], "e": "viri – 'men'. Phrygii agrees with it."}, {"t": "mcq", "p": "quot … tot means…", "o": ["how many … how many", "as many … so many", "so many … as many"], "a": 1, "e": "A correlative pair: 'as many arrows as she hurled, so many men fell' – every shot kills."}, {"t": "mcq", "p": "Why call the Trojans 'Phrygian'?", "o": ["They are a different army", "It is a scornful name for Trojans", "They are Camilla's allies"], "a": 1, "e": "Phrygia is the region around Troy, so Phrygian = Trojan. Enemies of the Trojans use the word with a hint of contempt (Phrygians were thought soft and eastern)."}], "ch": [["quotque … spicula", "And as many arrows as"], ["emissa manu", "sent from her hand"], ["contorsit virgo,", "the maiden hurled,"], ["tot Phrygii … viri", "so many Phrygian men"], ["cecidere", "fell."]], "ord": [0, 2, 1, 3, 4], "m": "And as many arrows as the maiden hurled from her hand, so many Phrygian men fell."}, {"lines": "677–678", "w": [["procul", "procul", "some way off, at a distance", "adverb"], ["Ornytus", "Ornytus, -i (m.)", "Ornytus", "nom. sing. – subject"], ["armis", "arma, -orum (n. pl.)", "in armour, with weapons", "abl. pl."], ["ignotis", "ignotus, -a, -um", "unfamiliar, strange", "abl. pl. – agrees with armis"], ["et", "et", "and", "conjunction"], ["equo", "equus, -i (m.)", "on a horse", "abl. sing."], ["venator", "venator, venatoris (m.)", "hunter", "nom. sing. – in apposition to Ornytus"], ["Iapyge", "Iapyx, Iapygis", "Iapygian (from Apulia in south-east Italy)", "abl. sing. – agrees with equo"], ["fertur,", "fero, ferre, tuli, latum", "is carried, rides", "3rd person sing. present PASSIVE – MAIN VERB"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb.", "a": [8], "e": "fertur – passive of fero: 'is carried'. On a horse, 'rides' is better English."}, {"t": "tap", "p": "Step 2 – Tap the subject.", "a": [1], "e": "Ornytus. venator ('hunter') is in apposition – it tells you what he is."}, {"t": "mcq", "p": "Iapyge agrees with which noun?", "o": ["armis", "equo", "venator"], "a": 1, "e": "Both ablative singular: 'on an Iapygian horse'."}, {"t": "mcq", "p": "Why are his arms described as ignotis ('unfamiliar')?", "o": ["He has borrowed enemy armour", "He is a hunter, not a soldier", "His weapons are made of gold"], "a": 1, "e": "He is a hunter, not a soldier: his gear is unusual for battle (as the next sentence shows). It makes him stand out, and sets up Camilla's taunt."}], "ch": [["procul", "Some way off"], ["Ornytus … venator", "Ornytus the hunter"], ["fertur", "rides along"], ["et equo … Iapyge", "on an Iapygian horse"], ["armis ignotis", "in unfamiliar armour."]], "ord": [0, 1, 2, 3, 4], "m": "Some way off, Ornytus the hunter rides along on an Iapygian horse, in unfamiliar armour."}, {"lines": "679–682", "w": [["cui", "qui, quae, quod", "whose (literally 'to whom')", "relative pronoun, dat. sing. – refers to Ornytus"], ["pellis", "pellis, pellis (f.)", "hide, skin", "nom. sing. – subject of operit"], ["latos", "latus, -a, -um", "broad", "acc. pl. masc. – agrees with umeros (NOT latus 'side')"], ["umeros", "umerus, -i (m.)", "shoulders", "acc. pl. – object of operit"], ["erepta", "eripio, eripere, eripui, ereptum", "stripped, torn", "perfect passive participle, nom. sing. fem. – agrees with pellis"], ["iuvenco", "iuvencus, -i (m.)", "from a bullock, young bull", "abl./dat. – 'from a bullock'"], ["pugnatori", "pugnator, pugnatoris (m.)", "as he fought, the fighter", "dat. sing. – agrees with cui"], ["operit,", "operio, operire, operui, opertum", "covers", "3rd person sing. present – verb 1"], ["caput", "caput, capitis (n.)", "head", "acc. sing. – object of texere"], ["ingens", "ingens, ingentis", "huge", "nom. sing. – agrees with hiatus"], ["oris", "os, oris (n.)", "of the mouth", "gen. sing."], ["hiatus", "hiatus, -us (m.)", "gaping, open jaws", "nom. sing. – subject of texere"], ["et", "et", "and", "conjunction"], ["malae", "mala, -ae (f.)", "jaws", "nom. pl. – subject of texere"], ["texere", "tego, tegere, texi, tectum", "covered", "= texerunt, 3rd person pl. perfect – verb 2"], ["lupi", "lupus, -i (m.)", "of a wolf", "gen. sing."], ["cum", "cum (+ abl.)", "with", "preposition"], ["dentibus", "dens, dentis (m.)", "teeth", "abl. pl. after cum"], ["albis,", "albus, -a, -um", "white", "abl. pl. – agrees with dentibus"], ["agrestisque", "agrestis, -e + -que", "and rustic, country-made", "nom. sing. masc. – agrees with sparus"], ["manus", "manus, -us (f.)", "hands", "acc. pl. – object of armat"], ["armat", "armo, armare", "arms", "3rd person sing. present – verb 3"], ["sparus;", "sparus, -i (m.)", "hunting spear", "nom. sing. – subject of armat"]], "qs": [{"t": "tap", "p": "Step 1 – This sentence has THREE verbs, one for each piece of his kit. Tap all three.", "a": [7, 14, 21], "e": "operit (covers), texere (covered = texerunt – NOT an infinitive) and armat (arms)."}, {"t": "mcq", "p": "Step 2a – What is the subject of operit?", "o": ["cui", "pellis", "umeros"], "a": 1, "e": "pellis (nom. sing.) – 'a hide stripped from a bullock covers…'. erepta agrees with it."}, {"t": "mcq", "p": "Step 2b – What are the subjects of texere?", "o": ["caput and oris", "hiatus and malae", "lupi and dentibus"], "a": 1, "e": "hiatus (nom. sing.) and malae (nom. pl.): 'the huge gaping mouth and the jaws of a wolf covered his head'. caput is the object."}, {"t": "mcq", "p": "Step 2c – What is the subject of armat?", "o": ["manus", "sparus", "agrestis"], "a": 1, "e": "sparus (nom. sing.), with agrestis agreeing. manus here is accusative PLURAL – 'his hands'."}, {"t": "mcq", "p": "latos umeros means…", "o": ["his side and shoulders", "broad shoulders", "hidden shoulders"], "a": 1, "e": "latos is from latus, -a, -um ('broad') – it agrees with umeros. Different from latus, lateris ('side') in sentence 1."}, {"t": "mcq", "p": "cui … pugnatori is dative. How do we make it natural English?", "o": ["'to whom, the fighter'", "'his … as he fought'", "'by whom fighting'"], "a": 1, "e": "Dative of possession / person affected: literally 'for whom as a fighter a hide covers the shoulders' → 'a hide covered his broad shoulders as he fought'."}, {"t": "mcq", "p": "What is the effect of this description?", "o": ["He looks like a hunter in beast-skins", "He is the best-armed Trojan", "He looks like a king"], "a": 0, "e": "Bull-hide, wolf-head helmet, country hunting spear: he is a hunter dressed up as a wild beast, odd and out of place on a battlefield. This sets up Camilla's taunt that he thought he was hunting animals."}], "ch": [["cui … pugnatori", "As he fought,"], ["pellis erepta iuvenco", "a hide stripped from a bullock"], ["latos umeros … operit,", "covered his broad shoulders;"], ["ingens oris hiatus et malae lupi cum dentibus albis", "the huge gaping mouth and jaws of a wolf with white teeth"], ["caput … texere,", "covered his head,"], ["agrestisque … sparus", "and a country hunting-spear"], ["manus armat", "armed his hands."]], "ord": [0, 1, 2, 3, 4, 5, 6], "m": "A hide stripped from a bullock covered his broad shoulders as he fought; the huge gaping mouth and jaws of a wolf, with their white teeth, covered his head, and a country hunting-spear armed his hands."}, {"lines": "682–683", "w": [["ipse", "ipse, ipsa, ipsum", "he himself", "nom. sing. masc. – subject"], ["catervis", "caterva, -ae (f.)", "troops, crowds", "abl. pl. – with in mediis"], ["vertitur", "verto, vertere, verti, versum", "turns about, wheels round", "3rd person sing. present passive – MAIN VERB"], ["in", "in (+ abl.)", "in", "preposition"], ["mediis", "medius, -a, -um", "the middle of", "abl. pl. – agrees with catervis"], ["et", "et", "and", "conjunction"], ["toto", "totus, -a, -um", "whole", "abl. sing. – agrees with vertice"], ["vertice", "vertex, verticis (m.)", "top of the head", "abl. sing. – 'by a whole head'"], ["supra", "supra", "above", "adverb"], ["est.", "sum, esse, fui", "is", "3rd person sing. present – MAIN VERB"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the TWO main verbs.", "a": [2, 9], "e": "vertitur ('turns about') and est ('is')."}, {"t": "tap", "p": "Step 2 – Tap the subject.", "a": [0], "e": "ipse – 'he himself' (Ornytus)."}, {"t": "mcq", "p": "catervis … in mediis means…", "o": ["in the middle of the troops", "with the middle troops", "by the troops in the middle"], "a": 0, "e": "in + ablative; medius means 'the middle of': 'in the midst of the troops'."}, {"t": "mcq", "p": "toto vertice supra est means…", "o": ["he is above the whole hill", "he is taller by a whole head", "he turns his whole head up"], "a": 1, "e": "He stands taller than them by a whole head. toto vertice is ablative of measure of difference. He towers over everyone: an easy target."}], "ch": [["ipse … vertitur", "He himself wheels about"], ["catervis … in mediis", "in the midst of the troops"], ["et toto vertice supra est.", "and stands a whole head above them."]], "ord": [0, 1, 2], "m": "He himself wheels about in the midst of the troops and stands a whole head taller than them."}, {"lines": "684–685", "w": [["hunc", "hic, haec, hoc", "him", "acc. sing. masc. – object"], ["illa", "ille, illa, illud", "she", "nom. sing. fem. – subject"], ["exceptum", "excipio, excipere, excepi, exceptum", "caught", "perfect passive participle, acc. sing. masc. – agrees with hunc"], ["(neque", "neque", "and not, for … not", "conjunction"], ["enim", "enim", "for", "conjunction"], ["labor", "labor, laboris (m.)", "effort, toil", "nom. sing. – supply erat / est"], ["agmine", "agmen, agminis (n.)", "column, army", "abl. sing."], ["verso)", "verto, vertere, verti, versum", "turned, routed", "perfect passive participle, abl. sing. – ablative absolute with agmine"], ["traicit", "traicio, traicere, traieci, traiectum", "she pierces, runs through", "3rd person sing. present – MAIN VERB"], ["et", "et", "and", "conjunction"], ["super", "super", "over (him), in addition", "adverb"], ["haec", "hic, haec, hoc", "these (words)", "acc. pl. neut."], ["inimico", "inimicus, -a, -um", "hostile", "abl. sing. – agrees with pectore"], ["pectore", "pectus, pectoris (n.)", "heart, breast", "abl. sing."], ["fatur:", "for, fari, fatus sum", "she speaks", "3rd person sing. present (deponent) – MAIN VERB"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the TWO main verbs.", "a": [8, 14], "e": "traicit ('runs through') and fatur ('speaks'). fatur is deponent – passive form, active meaning."}, {"t": "tap", "p": "Step 2 – Tap the subject.", "a": [1], "e": "illa – Camilla."}, {"t": "mcq", "p": "hunc … exceptum traicit. How do we put this into good English?", "o": ["'she runs through this caught man'", "'she caught him and ran him through'", "'he was caught and ran her through'"], "a": 1, "e": "Latin often uses a participle where English prefers two verbs: 'him, caught, she runs through' → 'she caught him and ran him through'."}, {"t": "mcq", "p": "neque enim labor (agmine verso) means…", "o": ["for it was no effort: the column was routed", "and the army did not work at all", "nor was the column turned by work"], "a": 0, "e": "Supply erat: 'for there was no effort'. agmine verso is an ablative absolute: 'the column having been turned' = routed."}, {"t": "mcq", "p": "inimico pectore means…", "o": ["with an enemy's chest", "with a hostile heart", "into the enemy's chest"], "a": 1, "e": "Ablative of manner: she speaks 'with hostile heart' – her words are full of scorn."}], "ch": [["hunc illa exceptum", "She caught him"], ["(neque enim labor", "– it was no effort,"], ["agmine verso)", "since his column had been routed –"], ["traicit", "and ran him through,"], ["et super haec … fatur:", "and over him she spoke these words"], ["inimico pectore", "with hostile heart:"]], "ord": [0, 1, 2, 3, 4, 5], "m": "She caught him – it was no effort, since his column had been routed – and ran him through, and standing over him she spoke these words with hostile heart:"}, {"lines": "686", "w": [["‘silvis", "silva, -ae (f.)", "in the woods", "abl. pl. – place where"], ["te,", "tu, tui", "you", "acc. sing. – subject of agitare (indirect statement)"], ["Tyrrhene,", "Tyrrhenus, -i (m.)", "Etruscan", "voc. sing. – Camilla addresses Ornytus"], ["feras", "fera, -ae (f.)", "wild beasts", "acc. pl. – object of agitare"], ["agitare", "agito, agitare", "to chase, to hunt", "present infinitive"], ["putasti?", "puto, putare, putavi", "did you think", "= putavisti, 2nd person sing. perfect – MAIN VERB"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb.", "a": [5], "e": "putasti is a shortened form of putavisti – 'you thought'. As a question: 'did you think…?'"}, {"t": "mcq", "p": "Step 2 – Who is the subject of putasti?", "o": ["Camilla", "Ornytus", "the wild beasts"], "a": 1, "e": "Ornytus, 'you'. putasti is 2nd person singular, and Tyrrhene (vocative) tells you who is being addressed."}, {"t": "mcq", "p": "te … feras agitare after putasti is…", "o": ["an indirect statement", "a purpose clause", "a direct command"], "a": 0, "e": "An indirect statement: 'that you were hunting wild beasts'. Verb of thinking + accusative + infinitive."}, {"t": "mcq", "p": "Why does she call him 'Etruscan'?", "o": ["The Etruscans are Trojan allies", "It is his first name", "It means 'coward'"], "a": 0, "e": "The Etruscans fight on Aeneas' side, and Ornytus is one of them. The taunt mocks his hunter's gear: he came to war as if to a hunt, and now he is the prey."}], "ch": [["Tyrrhene,", "Etruscan,"], ["putasti", "did you think"], ["te … feras agitare", "that you were hunting wild beasts"], ["silvis", "in the woods?"]], "ord": [1, 0, 2, 3], "m": "‘Did you think, Etruscan, that you were hunting wild beasts in the woods?"}, {"lines": "687–688", "w": [["advenit", "advenio, advenire, adveni", "has come", "3rd person sing. perfect – MAIN VERB"], ["qui", "qui, quae, quod", "which", "relative pronoun, nom. sing. masc. – refers to dies"], ["vestra", "vester, vestra, vestrum", "your (plural)", "acc. pl. neut. – agrees with verba"], ["dies", "dies, diei (m.)", "day", "nom. sing. – subject"], ["muliebribus", "muliebris, -e", "of a woman, a woman's", "abl. pl. – agrees with armis"], ["armis", "arma, -orum (n. pl.)", "with weapons", "abl. pl."], ["verba", "verbum, -i (n.)", "words, boasts", "acc. pl. – object of redargueret"], ["redargueret.", "redarguo, redarguere, redargui", "would refute, prove wrong", "3rd person sing. imperfect subjunctive – purpose"]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb. (It comes first!)", "a": [0], "e": "advenit – 'has come'. It is perfect (advēnit) here."}, {"t": "tap", "p": "Step 2 – Tap the subject.", "a": [3], "e": "dies – 'the day'. Virgil has tucked it inside the qui clause."}, {"t": "mcq", "p": "qui refers back to…", "o": ["vestra", "dies", "verba"], "a": 1, "e": "qui is nominative singular masculine – like dies (masculine here)."}, {"t": "mcq", "p": "Why is redargueret subjunctive?", "o": ["relative clause of purpose", "indirect command", "indirect statement"], "a": 0, "e": "A relative clause of purpose: 'the day has come to refute…'. qui + subjunctive can express purpose: 'a day which would / was meant to refute your words'."}, {"t": "mcq", "p": "vestra is plural 'your'. Whose words does she mean?", "o": ["Only Ornytus' words", "All the enemy's boasts", "Diana's words"], "a": 1, "e": "The boasts of all the Trojans and Etruscans who look down on women fighters. She widens the insult to all the enemy. muliebribus armis is pointed: they are being beaten by a woman."}], "ch": [["advenit … dies", "The day has come"], ["qui … redargueret", "which would refute"], ["vestra … verba", "your words"], ["muliebribus armis", "with a woman's weapons."]], "ord": [0, 1, 2, 3], "m": "The day has come which would prove your boasts wrong with a woman's weapons."}, {"lines": "688–689", "w": [["nomen", "nomen, nominis (n.)", "name, claim to fame", "acc. sing. – object of referes"], ["tamen", "tamen", "however, yet", "adverb"], ["haud", "haud", "not", "adverb"], ["leve", "levis, -e", "light, trivial", "acc. sing. neut. – agrees with nomen"], ["patrum", "pater, patris (m.)", "of your fathers, ancestors", "gen. pl."], ["manibus", "manes, manium (m. pl.)", "to the shades, spirits of the dead", "dat. pl. – NOT manus 'hand'!"], ["hoc", "hic, haec, hoc", "this", "acc. sing. neut. – agrees with nomen"], ["referes,", "refero, referre, rettuli, relatum", "you will carry back, report", "2nd person sing. future – MAIN VERB"], ["telo", "telum, -i (n.)", "by the weapon", "abl. sing."], ["cecidisse", "cado, cadere, cecidi, casum", "to have fallen → that you fell", "perfect infinitive"], ["Camillae.’", "Camilla, -ae (f.)", "of Camilla", "gen. sing."]], "qs": [{"t": "tap", "p": "Step 1 – Tap the main verb.", "a": [7], "e": "referes – 'you will carry back'."}, {"t": "mcq", "p": "What tense is referes?", "o": ["present", "future", "perfect"], "a": 1, "e": "refero is 3rd conjugation: -es = future (present would be refers)."}, {"t": "mcq", "p": "patrum manibus: is manibus from manus ('hand')?", "o": ["Yes: manus, 'hand'", "No: manes, 'shades'"], "a": 1, "e": "No: from manes, 'to the shades of your fathers'. manes = the spirits of the dead in the Underworld. Ornytus will carry this news down to his dead ancestors."}, {"t": "mcq", "p": "haud leve ('not light') is an example of…", "o": ["litotes", "a simile", "alliteration"], "a": 0, "e": "Litotes: understatement that means 'a great'. 'No slight name' = a very considerable claim to fame. Her mockery is sarcastic, but it is also her real pride."}, {"t": "mcq", "p": "telo cecidisse Camillae explains…", "o": ["the claim to fame", "why she is angry", "where he fell"], "a": 0, "e": "It is in apposition to hoc nomen: this is the boast – 'that you fell by Camilla's weapon'."}], "ch": [["tamen", "Yet"], ["referes", "you will carry back"], ["patrum manibus", "to the shades of your fathers"], ["nomen … haud leve … hoc", "this claim to fame, and no slight one:"], ["telo cecidisse Camillae.", "that you fell by Camilla's weapon.’"]], "ord": [0, 1, 2, 3, 4], "m": "Yet you will carry back to the shades of your fathers this claim to fame, and no slight one: that you fell by the weapon of Camilla.’"}];
+
+const GAPS={5:"[lines 659–663 omitted: simile of the Amazons]",6:"[lines 666–675 omitted: list of Camilla's victims]"};
+const PUNCT=/[,.;:?()‘’]/g;
+
+/* ---------------- CLOUD (shared Vestigia store) ---------------- */
+const CLOUD = { endpoint:"https://vestigia-store.mrbeasley930.workers.dev", book:"hvtom27-l2" };
+const LESSON = { id:"HV2", title:"Virgil — Camilla (Aeneid 11)" };
+let IDENTITY = null;
+function userKey(){ return IDENTITY ? (IDENTITY.cls+"::"+IDENTITY.cand) : "anon"; }
+function fullKey(){ return CLOUD.book+"::"+userKey(); }
+const CloudStore = {
+  async pull(){
+    if(!CLOUD.endpoint||!IDENTITY) return null;
+    try{ const r=await fetch(CLOUD.endpoint+"?key="+encodeURIComponent(fullKey()),{headers:{"x-vestigia-token":"vp_8c7103b52959b06cb55526bf"},method:"GET"});
+      if(!r.ok) return null; const j=await r.json(); return j&&j.data?j.data:null;
+    }catch(e){ console.warn("cloud pull failed; this device only.",e); return null; }
+  },
+  async push(blob){
+    if(!CLOUD.endpoint||!IDENTITY) return false;
+    try{ const r=await fetch(CLOUD.endpoint,{method:"POST",headers:{ "x-vestigia-token":"vp_8c7103b52959b06cb55526bf","Content-Type":"application/json"},
+        body:JSON.stringify({key:fullKey(),cls:IDENTITY.cls,cand:IDENTITY.cand,book:CLOUD.book,data:blob,savedAt:new Date().toISOString()})});
+      return r.ok;
+    }catch(e){ console.warn("cloud push failed; kept on this device.",e); return false; }
+  }
+};
+
+/* state: cam_verb[s], cam_subj[s], cam_gq[s*10+k], cam_ph[s*10+k] (0/1), cam_asm[s] (0/1), cam[s] (write-up self-mark 0/1/2)
+   plus typedText (write-ups), phText (chunk English), ord (built orders) and rag */
+let state = {};
+const SECS=['cam_verb','cam_subj','cam_gq','cam_ph','cam_asm','cam'];
+const SECNAME={cam_verb:"Step 1 find the verb",cam_subj:"Step 2 find the subject",cam_gq:"Step 3 grammar questions",cam_ph:"Step 4 chunk by chunk",cam_asm:"Step 5 English order",cam:"Step 6 write-ups"};
+function secKey(qi){ return qi===0?'cam_verb':(qi===1?'cam_subj':'cam_gq'); }
+function secIdx(si,qi){ return qi<2? si : si*10+qi; }
+const MAXPTS=(function(){ const m={cam_verb:0,cam_subj:0,cam_gq:0,cam_ph:0,cam_asm:0,cam:0};
+  S.forEach(s=>{ m.cam_verb++; m.cam_subj++; m.cam_gq+=s.qs.length-2; m.cam_ph+=s.ch.length; m.cam_asm++; m.cam+=2; }); return m; })();
+function g(sec,i){ const o=state[sec]; return (o&&o[i]!==undefined&&o[i]!==null)?o[i]:null; }
+function setPts(sec,i,v){ state[sec]=state[sec]||{}; state[sec][i]=v; }
+function secPoints(sec){ const o=state[sec]||{}; return Object.values(o).reduce((a,b)=>a+(b||0),0); }
+
+function storeKey(){ return "iudicium_hv_l2_" + (IDENTITY ? (IDENTITY.cls+"_"+IDENTITY.cand) : "default"); }
+function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function safeSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+function save(){ safeSet(storeKey(), JSON.stringify(state)); refreshScore(); mirrorToCloud(); }
+
+function cloudSummary(){
+  let got=0,max=0; const sections={};
+  for(const k of SECS){ const p=secPoints(k); sections[k]={pts:p,max:MAXPTS[k]}; got+=p; max+=MAXPTS[k]; }
+  const detail=S.map((s,i)=>({ id:'cam'+i, s:'cam', lat:s.w.map(w=>w[0]).join(' '), a:(state.typedText&&state.typedText['cam_'+i])||'', m:s.m, mk:g('cam',i) }));
+  return { name:(IDENTITY?IDENTITY.cand:''), lesson:LESSON.id, title:LESSON.title,
+    coreGot:got, coreTot:max, rag:(state.rag||''), notes:{},
+    sections, detail, text:summaryText(), savedAt:new Date().toISOString(), state };
+}
+function summaryText(){
+  let out=LESSON.title+"\n";
+  for(const k of SECS) out+="  "+SECNAME[k]+": "+secPoints(k)+"/"+MAXPTS[k]+"\n";
+  if(state.rag) out+="Confidence: "+state.rag+"\n";
+  S.forEach((s,i)=>{ const t=state.typedText&&state.typedText['cam_'+i]; if(t) out+="  S"+(i+1)+": "+t+"\n"; });
+  return out;
+}
+let _mirrorTimer=null;
+function mirrorToCloud(){
+  if(!IDENTITY) return;
+  setSync("saving"); clearTimeout(_mirrorTimer);
+  _mirrorTimer=setTimeout(async()=>{ const ok=await CloudStore.push(cloudSummary()); setSync(ok?"cloud":"offline"); },600);
+}
+function setSync(s){
+  try{ window.__vsBanner && window.__vsBanner(s); }catch(e){}
+  const el=document.getElementById('savestatus'); if(!el) return;
+  const map={ saving:["saving…","#9a6b1e"], cloud:["✓ saved to class store","#2e7d32"], offline:["saved on this device — will sync when online","#a52a2a"] };
+  const m=map[s]||map.cloud; el.textContent=m[0]; el.style.color=m[1];
+}
+function refreshScore(){ let got=0,max=0; for(const k of SECS){ got+=secPoints(k); max+=MAXPTS[k]; }
+  document.getElementById('score').textContent='Score: '+got+' / '+max; }
+
+/* ---------------- sign-in gate ---------------- */
+function showGate(){
+  const ov=document.createElement('div'); ov.id='rp-gate';
+  ov.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(8,8,14,.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Georgia,serif;";
+  ov.innerHTML=
+    '<div style="max-width:440px;width:100%;background:linear-gradient(180deg,#f6eed6,#e6d6b4);border-top:6px solid #c69a3c;border-radius:14px;padding:26px 26px 22px;box-shadow:0 22px 60px rgba(0,0,0,.6);color:#2b2012;">'
+    +'<div style="font-size:12.5px;letter-spacing:2px;color:#8f3320;font-weight:700;">EDUQAS GCSE LATIN · HEROES &amp; VILLAINS</div>'
+    +'<div style="font-size:23px;color:#7a2f1e;font-weight:800;margin:2px 0 3px;letter-spacing:.5px;">Virgil: Camilla</div>'
+    +'<div style="font-size:13px;color:#6b5636;margin-bottom:16px;font-style:italic;">Aeneid 11. Sign in to start.</div>'
+    +'<label style="font-size:13px;color:#7a2f1e;font-weight:700;">Class code</label>'
+    +'<input id="g-cls" autocomplete="off" placeholder="e.g. TUTOR" style="width:100%;box-sizing:border-box;margin:5px 0 12px;padding:11px;border-radius:8px;border:1px solid #c9b686;background:#fbf6e6;color:#2b2012;font-size:15px;font-family:Georgia,serif;">'
+    +'<label style="font-size:13px;color:#7a2f1e;font-weight:700;">Your name</label>'
+    +'<input id="g-cand" autocomplete="off" placeholder="e.g. Marcus" style="width:100%;box-sizing:border-box;margin:5px 0 4px;padding:11px;border-radius:8px;border:1px solid #c9b686;background:#fbf6e6;color:#2b2012;font-size:15px;font-family:Georgia,serif;">'
+    +'<div id="g-err" style="color:#a12016;font-size:12.5px;min-height:17px;margin:3px 0 6px;"></div>'
+    +'<button id="g-go" style="width:100%;padding:12px;border:0;border-radius:8px;background:linear-gradient(135deg,#caa04a,#9a6b1e);color:#221806;font-weight:800;font-size:15px;cursor:pointer;font-family:Georgia,serif;letter-spacing:.5px;">Start my work</button>'
+    +'<div style="font-size:11.5px;color:#8a7048;margin-top:13px;line-height:1.5;">Use the same class code and name as last time.</div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  document.getElementById('g-go').addEventListener('click',signIn);
+  ov.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); signIn(); } });
+  document.getElementById('g-cls').focus();
+}
+async function signIn(){
+  const cls=(document.getElementById('g-cls').value||'').trim().toUpperCase();
+  const cand=(document.getElementById('g-cand').value||'').trim();
+  const err=document.getElementById('g-err');
+  if(!cls){ err.textContent="Enter your class code."; return; }
+  if(!/^.{2,40}$/.test(cand)){ err.textContent="Please enter your name (2-40 characters)."; return; }
+  IDENTITY={cls,cand};
+  const go=document.getElementById('g-go'); if(go) go.textContent="Loading…";
+  const remote=await CloudStore.pull();
+  if(remote&&remote.state){ state=remote.state; }
+  else { try{ state=JSON.parse(safeGet(storeKey())||"{}"); }catch(e){ state={}; } }
+  save();
+  const gt=document.getElementById('rp-gate'); if(gt) gt.remove();
+  document.getElementById('whoami').innerHTML='Signed in: <b>'+esc(IDENTITY.cls)+' · '+esc(IDENTITY.cand)+'</b>';
+  restoreRag(); updAll(); tabs(); render();
+  setSync(remote?"cloud":"offline");
+}
+
+/* ---------------- page ---------------- */
+let cur=0;
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function popWord(si,wi){const w=S[si].w[wi];
+ document.querySelectorAll('.w.sel').forEach(e=>e.classList.remove('sel'));
+ if(WH==='off'){hidePop();return;}
+ document.querySelectorAll(`.w[data-s="${si}"][data-w="${wi}"]`).forEach(e=>e.classList.add('sel'));
+ showWordHelp(w);}
+function hidePop(){document.getElementById('pop').style.display='none';document.querySelectorAll('.w.sel').forEach(e=>e.classList.remove('sel'))}
+function wordsHTML(si){return S[si].w.map((w,i)=>`<span class="w" data-s="${si}" data-w="${i}" onclick="popWord(${si},${i})">${esc(w[0])}</span>`).join(' ')}
+
+(function(){let h='';S.forEach((s,i)=>{if(GAPS[i])h+=`<div class="gap">${GAPS[i]}</div>`;
+ h+=`<div class="line"><span class="ln">${s.lines}</span><span>${wordsHTML(i)}</span></div>`});
+ document.getElementById('full').innerHTML=h})();
+
+function tabs(){document.getElementById('tabs').innerHTML=S.map((s,i)=>`<button class="${i==cur?'on':''} ${g('cam',i)!==null?'done':''}" onclick="go(${i})">${i+1}</button>`).join('')}
+function go(i){cur=i;render();tabs();document.getElementById('tabs').scrollIntoView({behavior:'smooth'})}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+ if(a.length>1&&a.every((v,k)=>v===k))return shuffle(a);return a}
+
+function render(){const s=S[cur];let h=`<div class="stickysent"><h3>Sentence ${cur+1} of ${S.length} <span class="note">(lines ${s.lines})</span></h3>`;
+ h+=`<div class="latin">${wordsHTML(cur)}</div>`+whBar()+`</div>`;
+ h+=`<div class="step"><div class="sh">Steps 1–3: Verb, subject and grammar questions</div><div class="sb">`;
+ s.qs.forEach((q,qi)=>{h+=`<div class="q"><div class="qp">${esc(q.p)}</div>`;
+  if(q.t==='tap'){h+=`<div class="opts">`+s.w.map((w,wi)=>`<button class="tapw" id="t${qi}_${wi}" onclick="tap(${qi},${wi})">${esc(w[0].replace(PUNCT,''))}</button>`).join('')+`</div>`}
+  else{h+=`<div class="opts">`+q.o.map((o,oi)=>`<button id="o${qi}_${oi}" onclick="mcq(${qi},${oi})">${esc(o)}</button>`).join('')+`</div>`}
+  h+=`<div class="fb" id="fb${qi}"></div><div class="row" style="margin-top:4px"><button class="btn ghost" style="font-size:.85rem;padding:2px 8px" onclick="showAns(${qi})">Show answer</button></div></div>`});
+ h+=`</div></div>`;
+ h+=`<div class="step"><div class="sh">Step 4: Translate chunk by chunk</div><div class="sb"><p class="note">Write the English for each Latin chunk, then check it and mark yourself honestly.</p>`;
+ s.ch.forEach((c,ci)=>{const t=(state.phText&&state.phText[cur*10+ci])||'';
+  h+=`<div class="chunk"><div class="cl">${esc(c[0])}</div><input type="text" id="c${ci}" value="${esc(t)}" oninput="savePh(${ci})" placeholder="Your English…"><div class="row"><button class="btn ghost" onclick="checkCh(${ci})">Check</button></div><div class="model" id="cm${ci}">${esc(c[1])}</div>
+  <div class="row selfm" id="cs${ci}"><span class="note">Did you have it?</span><button class="sm" id="cs${ci}_1" onclick="markCh(${ci},1)">✓ Yes</button><button class="sm" id="cs${ci}_0" onclick="markCh(${ci},0)">✗ Not really</button></div></div>`});
+ h+=`</div></div>`;
+ h+=`<div class="step"><div class="sh">Step 5: Put the chunks into English order</div><div class="sb"><p class="note">Click the English chunks in the order they should go in a natural English sentence.</p><div class="build" id="build"></div><div class="row" id="chips"></div><div class="row" style="margin-top:8px"><button class="btn" onclick="checkOrd()">Check order</button><button class="btn ghost" onclick="resetOrd()">Start again</button></div><div class="fb" id="ordfb"></div></div></div>`;
+ h+=`<div class="step"><div class="sh">Step 6: Write it up</div><div class="sb"><p class="note">Write a smooth translation of the whole sentence, then show the model and mark yourself.</p><textarea id="wr" oninput="saveW()">${esc((state.typedText&&state.typedText['cam_'+cur])||'')}</textarea><div class="row" style="margin-top:6px"><button class="btn" onclick="showModel()">Show model translation</button></div><div class="model" id="mod">${esc(s.m)}</div>
+ <div class="row selfm" id="wm"><span class="note">Mark yourself:</span><button class="sm" id="wm2" onclick="markW(2)">2 – accurate</button><button class="sm" id="wm1" onclick="markW(1)">1 – close, a slip or two</button><button class="sm" id="wm0" onclick="markW(0)">0 – not yet</button></div></div></div>`;
+ h+=`<div class="navbtns"><button class="btn ghost" ${cur==0?'disabled':''} onclick="go(${cur-1})">← Previous sentence</button><button class="btn" ${cur==S.length-1?'disabled':''} onclick="go(${cur+1})">Next sentence →</button></div>`;
+ document.getElementById('work').innerHTML=h;tapped={};ordState=[];ordShuf=[];drawOrd();restoreSentence()}
+
+function restoreSentence(){const s=S[cur];
+ s.qs.forEach((q,qi)=>{const v=g(secKey(qi),secIdx(cur,qi)); if(v===null) return;
+  if(q.t==='tap') q.a.forEach(wi=>document.getElementById(`t${qi}_${wi}`).classList.add('right'));
+  else document.getElementById(`o${qi}_${q.a}`).classList.add('right');
+  const fb=document.getElementById('fb'+qi); fb.className='fb '+(v?'ok':'info'); fb.textContent=(v?'✓ ':'(answered – first try wrong) ')+q.e;});
+ s.ch.forEach((c,ci)=>{const v=g('cam_ph',cur*10+ci); if(v===null) return;
+  document.getElementById('cm'+ci).classList.add('show');document.getElementById('cs'+ci).classList.add('show');
+  document.getElementById(`cs${ci}_${v}`).classList.add('chosen');});
+ const a=g('cam_asm',cur); if(a!==null){const fb=document.getElementById('ordfb');fb.className='fb '+(a?'ok':'info');
+  fb.innerHTML=(a?'✓ Done. ':'Done. ')+'Model order: <i>'+s.ord.map(i=>esc(s.ch[i][1])).join(' ')+'</i>';}
+ const w=g('cam',cur); if(w!==null){document.getElementById('mod').classList.add('show');document.getElementById('wm').classList.add('show');document.getElementById('wm'+w).classList.add('chosen');}
+}
+
+let tapped={}, wrongTap={};
+function record(qi,v){const sec=secKey(qi),i=secIdx(cur,qi); if(g(sec,i)!==null) return; setPts(sec,i,v); save();}
+function tap(qi,wi){const q=S[cur].qs[qi],b=document.getElementById(`t${qi}_${wi}`),fb=document.getElementById('fb'+qi);
+ tapped[qi]=tapped[qi]||new Set();
+ if(q.a.includes(wi)){b.classList.add('right');tapped[qi].add(wi);
+  if(q.a.every(x=>tapped[qi].has(x))){fb.className='fb ok';fb.textContent='✓ '+q.e;record(qi,wrongTap[qi]?0:1)}
+  else{fb.className='fb info';fb.textContent=`Good – ${q.a.length-tapped[qi].size} more to find.`}}
+ else{b.classList.add('wrong');wrongTap[qi]=true;record(qi,0);fb.className='fb no';const w=S[cur].w[wi];
+  fb.textContent=`Not that one – ${w[0].replace(PUNCT,'')} is ${w[3]}. Try again.`;
+  setTimeout(()=>b.classList.remove('wrong'),1200)}}
+function mcq(qi,oi){const q=S[cur].qs[qi],fb=document.getElementById('fb'+qi),b=document.getElementById(`o${qi}_${oi}`);
+ record(qi,oi===q.a?1:0);
+ if(oi===q.a){b.classList.add('right');fb.className='fb ok';fb.textContent='✓ '+q.e}
+ else{b.classList.add('wrong');fb.className='fb no';fb.textContent='Not quite – have another look and try again.'}}
+function showAns(qi){const q=S[cur].qs[qi],fb=document.getElementById('fb'+qi);
+ record(qi,0);
+ if(q.t==='tap'){q.a.forEach(wi=>document.getElementById(`t${qi}_${wi}`).classList.add('right'))}
+ else document.getElementById(`o${qi}_${q.a}`).classList.add('right');
+ fb.className='fb ok';fb.textContent=q.e}
+
+let _phT=null;
+function savePh(ci){state.phText=state.phText||{};state.phText[cur*10+ci]=document.getElementById('c'+ci).value;clearTimeout(_phT);_phT=setTimeout(save,800)}
+function checkCh(ci){document.getElementById('cm'+ci).classList.add('show');document.getElementById('cs'+ci).classList.add('show')}
+function markCh(ci,v){setPts('cam_ph',cur*10+ci,v);
+ ['0','1'].forEach(k=>document.getElementById(`cs${ci}_${k}`).classList.remove('chosen'));document.getElementById(`cs${ci}_${v}`).classList.add('chosen');save()}
+
+let ordState=[],ordShuf=[];
+function drawOrd(){const s=S[cur];if(!ordShuf.length)ordShuf=shuffle(s.ch.map((c,i)=>i));
+ document.getElementById('chips').innerHTML=ordShuf.map(i=>`<button class="chip ${ordState.includes(i)?'used':''}" onclick="pick(${i})">${esc(s.ch[i][1])}</button>`).join('');
+ document.getElementById('build').innerHTML=ordState.length?ordState.map(i=>esc(s.ch[i][1])).join(' '):'<span class="note">Your sentence will build here…</span>'}
+function pick(i){ordState.push(i);drawOrd()}
+function resetOrd(){ordState=[];document.getElementById('ordfb').className='fb';drawOrd()}
+function checkOrd(){const s=S[cur],fb=document.getElementById('ordfb');
+ if(ordState.length<s.ch.length){fb.className='fb info';fb.textContent='Use all the chunks first.';return}
+ const ok=ordState.every((v,k)=>v===s.ord[k]);
+ if(g('cam_asm',cur)===null){setPts('cam_asm',cur,ok?1:0);state.ord=state.ord||{};state.ord[cur]=ordState.map(i=>s.ch[i][1]).join(' | ');save()}
+ if(ok){fb.className='fb ok';fb.textContent='✓ That reads well in English.'}
+ else{fb.className='fb no';fb.innerHTML='Other orders can work, but the model order is:<br><i>'+s.ord.map(i=>esc(s.ch[i][1])).join(' ')+'</i>'}}
+
+let _wT=null;
+function saveW(){state.typedText=state.typedText||{};state.typedText['cam_'+cur]=document.getElementById('wr').value;updAll();clearTimeout(_wT);_wT=setTimeout(save,800)}
+function showModel(){if(!document.getElementById('wr').value.trim()){alertBox();return}
+ document.getElementById('mod').classList.add('show');document.getElementById('wm').classList.add('show')}
+function alertBox(){const m=document.getElementById('mod');m.classList.add('show');m.style.background='#fdecea';m.style.color='#7a1c1c';m.style.borderColor='#a52a2a';
+ m.textContent='Write your own version first – then you can see the model.';setTimeout(()=>{m.classList.remove('show');m.removeAttribute('style');m.textContent=S[cur].m},2200)}
+function markW(v){setPts('cam',cur,v);['0','1','2'].forEach(k=>document.getElementById('wm'+k).classList.remove('chosen'));document.getElementById('wm'+v).classList.add('chosen');save();tabs()}
+
+function setRag(v,btn){state.rag=v;document.querySelectorAll('#ragBox .sm').forEach(s=>s.classList.remove('chosen'));if(btn)btn.classList.add('chosen');save()}
+function restoreRag(){if(!state.rag)return;const el=document.querySelector('#ragBox .sm.'+({green:'nailed',amber:'close',red:'notyet'}[state.rag]));if(el)el.classList.add('chosen')}
+function updAll(){document.getElementById('all').value=S.map((s,i)=>{const t=state.typedText&&state.typedText['cam_'+i];return t&&t.trim()?`(${i+1}) ${t.trim()}`:''}).filter(Boolean).join('\n')}
+function copyAll(){const t=document.getElementById('all');t.select();
+ (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>document.getElementById('copied').textContent='Copied.').catch(()=>{document.execCommand('copy');document.getElementById('copied').textContent='Copied.'})}
+
+tabs();render();refreshScore();showGate();
+</script>
+
+<!-- save-failure banner: a failed cloud save shows a red bar; it clears when a save succeeds -->
+<script>
+window.__vsBanner = function(state){
+  try{
+    if(state === 'saving') return;
+    var on = (state === 'offline');
+    var b = document.getElementById('vs-savefail');
+    if(!b){
+      if(!on) return;
+      b = document.createElement('div');
+      b.id = 'vs-savefail';
+      b.setAttribute('role','alert');
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#b3261e;color:#fff;font-family:Georgia,"Times New Roman",serif;font-size:15px;line-height:1.5;padding:11px 18px;text-align:center;box-shadow:0 3px 14px rgba(0,0,0,.45);';
+      b.innerHTML = '<b>NOT SAVED TO THE CLASS STORE.</b> Your answers are safe on this computer, but they are not reaching your teacher. Say so before you carry on.<div style="font-size:12.5px;opacity:.9;margin-top:3px;">Keep working &mdash; this clears itself the moment it reconnects.</div>';
+      (document.body || document.documentElement).appendChild(b);
+    }
+    b.style.display = on ? 'block' : 'none';
+    if(document.body) document.body.style.paddingTop = on ? (b.offsetHeight + 6) + 'px' : '';
+  }catch(e){}
+};
+</script>
+</body>
+</html>
